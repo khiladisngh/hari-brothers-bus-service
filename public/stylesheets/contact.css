@@ -7,6 +7,7 @@
     text-align: center;
     padding: 85px 15px 40px;
     background: linear-gradient(132.18deg, #03A678 0%, #035949 100%);
+    overflow-x: hidden;
 }
 
 #contact-section .contact-container {

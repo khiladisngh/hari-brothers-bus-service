@@ -4,6 +4,7 @@
     padding: 85px 15px 60px;
     background: linear-gradient(135deg, #03A678 0%, #035949 100%);
     min-height: 1300px;
+    overflow-x: hidden;
 }
 
 #tours-section .accordion {
