@@ -1,0 +1,21 @@
+/* ABOUT SECTION */
+
+#about-section {
+    position: relative;
+    z-index: 10;
+    background-color: #EFB447;
+    text-align: center;
+    padding: 85px 15px 40px;
+    min-height: 1300px;
+}
+
+#about-section .about-container {
+    background: linear-gradient(135deg, #03A678 0%, #035949 100%);
+    padding: 5% 7%;
+    border-radius: 24px;
+    color: #EFB447;
+}
+
+#about-section .about-container p {
+    color: #FFF;
+}

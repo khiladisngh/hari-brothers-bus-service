@@ -1,0 +1,65 @@
+[
+  {
+    "tourName": "Agra Sightseeing",
+    "tourPlaces": [
+      "Agra Fort",
+      "Fatehpur Sikri",
+      "Taj Mahal",
+      "Akbar's Tomb",
+      "Itimad Ud Daulah",
+      "Kailash Mandir"
+    ]
+  },
+  {
+    "tourName": "Mathura Sightseeing",
+    "tourPlaces": [
+      "Prem Mandir",
+      "Banke Bihari Mandir",
+      "ISKON Mandir", 
+      "Pagla Baba Ka Mandir",
+      "Dwarkadhish Mandir",
+      "Nidhi Van",
+      "Kirti Mandir",
+      "Shri Krishna Janmabhoomi",
+      "Dauji Mandir"
+    ]
+  },
+  {
+    "tourName": "Delhi Sightseeing",
+    "tourPlaces": [
+      "Raj Ghat",
+      "Rail Museum",
+      "Red Fort",
+      "Qutub Minar",
+      "Humayun's Tomb",
+      "Jantar Mantar",
+      "India Gate",
+      "Lotus Temple"
+    ]
+  },
+  {
+    "tourName": "Jaipur Sightseeing",
+    "tourPlaces": [
+      "Hawa Mahal",
+      "Jantar Mantar",
+      "ISKON Temple",
+      "Jal Mahal",
+      "Amer Palace",
+      "Nahargarh Fort",
+      "Albert Hall Museum",
+      "Choki Dhani"
+    ]
+  },
+  {
+    "tourName": "Agra Delhi",
+    "tourPlaces": [
+      "Taj Mahal",
+      "Agra Fort",
+      "Fatehpur Sikri",
+      "Raj Ghat",
+      "Red Fort",
+      "India Gate",
+      "Lotus Temple"
+    ]
+  }
+]

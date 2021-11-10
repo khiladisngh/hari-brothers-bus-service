@@ -1,0 +1,64 @@
+#tours-section {
+    text-align: center;
+    color: #EFB447;
+    padding: 85px 15px 60px;
+    background: linear-gradient(135deg, #03A678 0%, #035949 100%);
+    min-height: 1300px;
+}
+
+#tours-section .accordion {
+    color: #035949;
+}
+
+#tours-section .accordion-item {
+    background: #F2C6A0;
+}
+
+#tours-section .accordion-button {
+    color: #EFB447;
+    background: linear-gradient(135deg, #03A678 0%, #035949 100%);
+}
+
+#tours-section .accordion-button:focus {
+    box-shadow: 0 0 0 0.125rem #EFB447;
+}
+
+#tours-section .accordion-flush {
+    border-radius: 12px;
+}
+
+#tours-section .accordion-flush .accordion-item:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+#tours-section .accordion-flush .accordion-item:last-child {
+    border-radius: 0 0 12px 12px ;
+}
+
+#tours-section .accordion-flush .accordion-item:first-child .accordion-button {
+    border-radius: 12px 12px 0 0;
+}
+
+#tours-section .accordion-flush .accordion-item:last-child .accordion-button {
+    border-radius: 0 0 12px 12px ;
+}
+
+#tours-section .accordion-body .places-container {
+    height: 100%;
+}
+
+#tours-section .accordion-body ul {
+    list-style: circle;
+}
+
+#tours-section .accordion-body .image-container {
+    position: relative;
+}
+
+#tours-section .accordion-body img {
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    object-fit: cover;
+    width: 300px;
+    height: 300px;
+}

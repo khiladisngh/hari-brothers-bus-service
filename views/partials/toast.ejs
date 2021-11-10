@@ -1,0 +1,41 @@
+<!--TOAST-->
+
+<style>
+    .toast {
+        color: #EFB447;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #03A678 0%, #035949 100%);
+        box-shadow: 0 9px 12px rgba(0, 0, 0, 0.14), 0 3px 16px rgba(0, 0, 0, 0.12), 0 5px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast-header {
+        color: #EFB447;
+        background: transparent;
+    }
+
+    /* Small devices (landscape phones, 576px and up) */
+    @media (max-width: 576px) {
+        .toast {
+            display: none;
+        }
+    }
+</style>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 60">
+    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast"  data-aos="fade-right" data-bs-autohide="false">
+        <div class="toast-header">
+            <img src="images/navbrand.png" class="rounded me-2" alt="...">
+            <strong class="me-auto my-auto h5">Call Us</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            <h6>+919411460750, +919412343701</h6>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $(".toast").toast('show');
+    });
+</script>

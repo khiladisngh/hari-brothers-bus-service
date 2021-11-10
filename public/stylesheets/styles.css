@@ -1,0 +1,248 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+@font-face {
+    font-family: "Brush-Script";
+    src: url("../fonts/Brush Script Regular.ttf")
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Barlow", sans-serif;
+    margin: 0;
+}
+
+h1 {
+    font-size: 48px;
+    font-weight: 300;
+}
+
+h2 {
+    font-size: 42px;
+    font-weight: 300;
+}
+
+h3 {
+    font-size: 36px;
+    font-weight: 400;
+}
+
+h4 {
+    font-size: 32px;
+    font-weight: 400;
+}
+
+h5 {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+h6 {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.brand {
+    font-family: "Brush-Script", cursive;
+    font-weight: 500;
+}
+
+.sub {
+    font-family: "Montserrat", sans-serif;
+}
+
+.sub .sub-1 {
+    font-size: 16px;
+}
+
+.sub .sub-2 {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+body {
+    font-family: "Lato", sans-serif;
+    font-size: 16px;
+    color: #2C3533;
+}
+
+img {
+    animation: fadeIn 1s ease-in-out;
+}
+
+.button-text {
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 0 5%;
+}
+
+caption {
+    font-size: 12px;
+}
+
+.overline {
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.shadow-dp-1 {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.14), 0 2px 1px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-2 {
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-3 {
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.14), 0 3px 3px rgba(0, 0, 0, 0.12), 0 1px 8px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-4 {
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-6 {
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.14), 0 1px 18px rgba(0, 0, 0, 0.12), 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-8 {
+    box-shadow: 0 8px 10px rgba(0, 0, 0, 0.14), 0 3px 14px rgba(0, 0, 0, 0.12), 0 5px 5px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-9 {
+    box-shadow: 0 9px 12px rgba(0, 0, 0, 0.14), 0 3px 16px rgba(0, 0, 0, 0.12), 0 5px 6px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-12 {
+    box-shadow: 0 12px 17px rgba(0, 0, 0, 0.14), 0 5px 22px rgba(0, 0, 0, 0.12), 0 7px 8px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-dp-16 {
+    box-shadow: 0 16px 24px rgba(0, 0, 0, 0.14), 0 6px 30px rgba(0, 0, 0, 0.12), 0 8px 10px rgba(0, 0, 0, 0.2);
+}
+
+.button {
+    border-radius: 12px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.button:active {
+    box-shadow: 0 0 0;
+    transform: scale(0.99);
+}
+
+.button:hover {
+    transform: scale(1.01);
+}
+
+.button-yellow {
+    height: 50px;
+    background-color: #EFB447;
+    color: #2C3533
+}
+
+.button-yellow:hover {
+    background-color: #fdce5a;
+}
+
+.button-yellow:active {
+    background-color: #EFB447;
+}
+
+.button-green {
+    height: 50px;
+    background-color: #03A678;
+    color: #FFFFFF;
+}
+
+.button-green:hover {
+    background-color: #27a781;
+    color: #FFF;
+}
+
+.button-green:active {
+    background-color: #03A678;
+    color: #FFF;
+}
+
+/* ANIMATIONS */
+
+.slideIn {
+    animation: slideIn 1s ease-in-out;
+}
+
+.fadeIn {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    h1 {
+        font-size: 96px;
+        font-weight: 300;
+    }
+
+    h2 {
+        font-size: 60px;
+        font-weight: 300;
+    }
+
+    h3 {
+        font-size: 48px;
+        font-weight: 400;
+    }
+
+    h4 {
+        font-size: 34px;
+        font-weight: 400;
+    }
+
+    h5 {
+        font-size: 24px;
+        font-weight: 400;
+    }
+
+    h6 {
+        font-size: 20px;
+        font-weight: 500;
+    }
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+
+}
