@@ -3,6 +3,7 @@
     padding: 85px 15px 60px;
     color: #035949;
     background: #EFB447;
+    overflow-x: hidden;
 }
 
 #gallery-section img {
@@ -11,5 +12,4 @@
     object-fit: cover;
     width: 100%;
     max-height: 500px;
-    overflow: hidden;
 }
