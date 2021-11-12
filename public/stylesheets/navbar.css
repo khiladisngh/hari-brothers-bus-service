@@ -1,79 +1,81 @@
 #nav-section {
-    position: fixed;
-    width:100vw;
-    background-color: #F2C6A0;
-    z-index: 100;
+  position: fixed;
+  width: 100vw;
+  background-color: #f2c6a0;
+  z-index: 100;
 }
 
 #nav-section::before {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    background-color: transparent;
-    bottom: -400px;
-    height: 400px;
-    width: 100%;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-    box-shadow: 0 -300px 0 0 #F2C6A0;
-    filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.14)) drop-shadow(0px 1px 10px rgba(0, 0, 0, 0.12)) drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  background-color: transparent;
+  bottom: -400px;
+  height: 400px;
+  width: 100%;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: 0 -350px 0 0 #f2c6a0;
+  filter: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.14))
+    drop-shadow(0px 1px 10px rgba(0, 0, 0, 0.12))
+    drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 #nav-section .navbar {
-    max-width: 1400px;
+  max-width: 1400px;
 }
 
 #nav-section .nav-container {
-    padding: 0 10px;
+  padding: 0 10px;
 }
 
 #nav-section .navbar-brand {
-    filter: invert(25%) sepia(56%) saturate(763%) hue-rotate(121deg) brightness(93%) contrast(98%);
+  filter: invert(25%) sepia(56%) saturate(763%) hue-rotate(121deg)
+    brightness(93%) contrast(98%);
 }
 
 #nav-section .navbar-brand:hover {
-    filter: invert(82%) sepia(24%) saturate(1302%) hue-rotate(337deg) brightness(97%) contrast(92%);
+  filter: invert(82%) sepia(24%) saturate(1302%) hue-rotate(337deg)
+    brightness(97%) contrast(92%);
 }
 
 #nav-section a {
-    color: #035949 !important;
+  color: #035949 !important;
 }
 
 #nav-section a:hover {
-    color: #EFB447 !important;
+  color: #efb447 !important;
 }
 
 #nav-section a.active {
-    border-bottom: 2px solid #EFB447;
+  border-bottom: 2px solid #efb447;
 }
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
-    #nav-section .nav-container {
-        padding: 0 65px;
-    }
+  #nav-section .nav-container {
+    padding: 0 65px;
+  }
 }
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-
 }
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-    #nav-section a.active {
-        border-bottom: 3px solid #EFB447;
-    }
+  #nav-section a.active {
+    border-bottom: 3px solid #efb447;
+  }
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-    #nav-section .nav-container {
-        padding: 0 165px;
-    }
+  #nav-section .nav-container {
+    padding: 0 165px;
+  }
 }

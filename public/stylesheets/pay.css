@@ -1,0 +1,28 @@
+#pay-section {
+  text-align: center;
+  padding: 85px 15px 60px;
+  color: aliceblue;
+  background: #efb447;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+#pay-section .pay-container {
+  background: linear-gradient(132.18deg, #03a678 0%, #035949 100%);
+  height: 100%;
+  padding: 5% 7%;
+  border-radius: 24px;
+}
+
+#pay-section h2 {
+  color: #efb447;
+}
+
+#pay-section button {
+  margin: 10px 0;
+  width: 100%;
+}
+
+#pay-section .paytm {
+  background: url("../images/icons/paytm.png") no-repeat;
+}

@@ -1,0 +1,32 @@
+<%- include('partials/header', {title: 'Pay'}) -%> <%-
+include('partials/navbar') -%> <%- include("partials/toast") -%>
+
+<!-- PAY SECTION -->
+
+<link rel="stylesheet" href="./stylesheets/pay.css" />
+
+<section id="pay-section">
+  <div class="container-xxl flex-wrap flex-md-nowrap">
+    <div class="pay-container shadow-dp-8">
+      <h2 class="p-3">Pay Us Online</h2>
+      <h3>+917017140452</h3>
+      <div class="pay-buttons p-3 d-flex flex-column justify-content-between">
+        <a href="https://www.paytm.com/" target="_blank">
+          <button type="button" class="btn btn-lg button button-text">
+            Paytm
+          </button>
+        </a>
+        <a href="https://pay.google.com/" target="_blank">
+          <button
+            type="button"
+            class="btn btn-lg button button-text button-yellow"
+          >
+            <i class="fab fa-google-pay fa-2x"></i>
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("partials/footer") -%> <%- include("partials/foot") -%>

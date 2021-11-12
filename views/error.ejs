@@ -1,21 +1,22 @@
-<%- include('partials/header', {title: 'Page not found'}) -%>
+<%- include('partials/header', {title: 'Page not found'}) -%> <%-
+include('partials/navbar') -%>
 
-<%- include('partials/navbar') -%>
-
-<section class="error"
-         style="
-            padding: 100px 0;
-            background: #EFB447;
-            height: 900px;">
-    <div class="container-xxl flex-wrap flex-md-nowrap d-flex flex-column align-items-center">
-        <h3><%= message %></h3>
-        <h4><%= error.status %></h4>
-    </div>
-
+<section
+  class="error"
+  style="padding: 100px 0; background: #efb447; height: 900px"
+>
+  <div
+    class="
+      container-xxl
+      flex-wrap flex-md-nowrap
+      d-flex
+      flex-column
+      align-items-center
+    "
+  >
+    <h3><%= message %></h3>
+    <h4><%= error.status %></h4>
+  </div>
 </section>
 
-<%- include("partials/footer") -%>
-
-<%- include("partials/foot") -%>
-
-
+<%- include("partials/footer") -%> <%- include("partials/foot") -%>

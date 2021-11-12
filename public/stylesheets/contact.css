@@ -1,129 +1,127 @@
 /* CONTACT SECTION */
 
 #contact-section {
-    position: relative;
-    z-index: 10;
-    color: #EFB447;
-    text-align: center;
-    padding: 85px 15px 40px;
-    background: linear-gradient(132.18deg, #03A678 0%, #035949 100%);
-    overflow-x: hidden;
+  position: relative;
+  z-index: 10;
+  color: #efb447;
+  text-align: center;
+  padding: 85px 15px 40px;
+  background: linear-gradient(132.18deg, #03a678 0%, #035949 100%);
+  overflow-x: hidden;
 }
 
 #contact-section .contact-container {
-    background-color: #035949;
-    padding: 5% 7%;
-    border-radius: 24px;
+  background-color: #035949;
+  padding: 5% 7%;
+  border-radius: 24px;
 }
 
 #contact-section button {
-    margin: 10px 0;
-    width: 100%;
+  margin: 10px 0;
+  width: 100%;
 }
 
 #contact-section .contact-info {
-    padding: 50px;
+  padding: 50px;
 }
 
 #contact-section .contact-info .heading {
-    color: #FFF;
-    padding: 0 0 10%
+  color: #fff;
+  padding: 0 0 10%;
 }
 
 #contact-section .contact-info ul {
-    padding-inline-start: 0;
+  padding-inline-start: 0;
 }
 
 #contact-section .contact-info .number {
-    display: grid;
-    list-style: none;
-    text-align: center;
+  display: grid;
+  list-style: none;
+  text-align: center;
 }
 
 #contact-section .message-form {
-    padding: 50px 20px;
-    color: #AFAFAF;
+  padding: 50px 20px;
+  color: #afafaf;
 }
 
-#contact-section .form-floating>.form-control {
-    border-radius: 12px;
+#contact-section .form-floating > .form-control {
+  border-radius: 12px;
 }
 
-#contact-section .form-floating>.form-select {
-    border-radius: 12px;
+#contact-section .form-floating > .form-select {
+  border-radius: 12px;
 }
 
 #contact-section .form-floating .form-date {
-    border-radius: 12px 0 0 12px;
-    padding: 1rem 1rem;
+  border-radius: 12px 0 0 12px;
+  padding: 1rem 1rem;
 }
 
 #contact-section .form-floating .input-group-text {
-    border-radius: 0 12px 12px 0;
-    padding: 1rem 0.75rem;
+  border-radius: 0 12px 12px 0;
+  padding: 1rem 0.75rem;
 }
 
-#contact-section .form-floating>label {
-    padding: 1rem 1.75rem;
+#contact-section .form-floating > label {
+  padding: 1rem 1.75rem;
 }
 
 #contact-section .line {
-    height: 2px;
-    background-color: #EFB447;
-    width: 100%;
+  height: 2px;
+  background-color: #efb447;
+  width: 100%;
 }
 
 /* MAP SECTION */
 
 #map-section {
-    position: relative;
-    top: 0;
+  position: relative;
+  top: 0;
 }
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
-    #contact-section .contact-info .number {
-        justify-content: start;
-    }
+  #contact-section .contact-info .number {
+    justify-content: start;
+  }
 }
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-
 }
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-    #contact-section {
-        padding: 125px 50px 100px;
-    }
+  #contact-section {
+    padding: 125px 50px 100px;
+  }
 
-    #contact-section .line {
-        position: absolute;
-        left: 50%;
-        bottom: 20%;
-        padding: 0 1px;
-        height: 60%;
-        width: 2px;
-    }
+  #contact-section .line {
+    position: absolute;
+    left: 50%;
+    bottom: 20%;
+    padding: 0 1px;
+    height: 60%;
+    width: 2px;
+  }
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-    #contact-section {
-        padding: 150px 165px 125px;
-    }
+  #contact-section {
+    padding: 150px 165px 125px;
+  }
 
-    #contact-section .contact-info {
-        padding: 100px 30px;
-    }
+  #contact-section .contact-info {
+    padding: 100px 30px;
+  }
 
-    #contact-section .message-form {
-        padding: 100px 30px;
-    }
+  #contact-section .message-form {
+    padding: 100px 30px;
+  }
 }

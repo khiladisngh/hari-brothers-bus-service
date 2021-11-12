@@ -71,7 +71,6 @@ app.route("/tours").get((req, res) => {
   });
 });
 
-
 // GALLERY ROUTE
 app.route("/gallery").get(async (req, res) => {
   let images = [];
@@ -98,6 +97,11 @@ app.route("/gallery").get(async (req, res) => {
 // ABOUT ROUTE
 app.route("/about").get((req, res) => {
   res.render("about");
+});
+
+// PAY ROUTE
+app.route("/pay").get((req, res) => {
+  res.render("pay");
 });
 
 // CONTACT ROUTE

@@ -1,47 +1,55 @@
-<%- include('partials/header', {title: 'Gallery'}) -%>
-
-<%- include('partials/navbar') -%>
-
-<%- include("partials/toast") -%>
+<%- include('partials/header', {title: 'Gallery'}) -%> <%-
+include('partials/navbar') -%> <%- include("partials/toast") -%>
 
 <!--GALLERY SECTION-->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.css">
-<link rel="stylesheet" href="./stylesheets/gallery.css">
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.css"
+/>
+<link rel="stylesheet" href="./stylesheets/gallery.css" />
 
 <section id="gallery-section">
-    <div class="container-xxl flex-wrap flex-md-nowrap">
+  <div class="container-xxl flex-wrap flex-md-nowrap">
+    <h1 class="p-3 p-lg-5" data-aos="fade-in">Gallery</h1>
 
-        <h1 class="p-3 p-lg-5" data-aos="fade-in">Gallery</h1>
-
-        <div class="gallery">
-            <div class="row d-flex justify-content-center">
-                <% imagesList.forEach((image, index) => { %>
-                    <div class="col-sm-<%= lodash.sample([6]) %> col-xl-<%= lodash.sample([6]) %> p-2">
-                        <a class="lightbox"
-                           href="https://maps.googleapis.com/maps/api/place/photo?maxheight=500&photoreference=<%= image.photo_reference %>&key=<%= process.env.GOOGLE_API %>">
-                            <img src="https://maps.googleapis.com/maps/api/place/photo?maxheight=1000&photoreference=<%= image.photo_reference %>&key=<%= process.env.GOOGLE_API %>"
-                                 class="shadow-1-strong mb-4"
-                                 alt="google-image"
-                                 data-aos="slide-left"
-                                 loading="lazy">
-                        </a>
-                    </div>
-                <% }) %>
-            </div>
+    <div class="gallery">
+      <div class="row d-flex justify-content-center">
+        <% imagesList.forEach((image, index) => { %>
+        <div
+          class="
+            col-sm-<%=
+            lodash.sample([6])
+            %>
+            col-xl-<%=
+            lodash.sample([6])
+            %>
+            p-2
+          "
+        >
+          <a
+            class="lightbox"
+            href="https://maps.googleapis.com/maps/api/place/photo?maxheight=500&photoreference=<%= image.photo_reference %>&key=<%= process.env.GOOGLE_API %>"
+          >
+            <img
+              src="https://maps.googleapis.com/maps/api/place/photo?maxheight=1000&photoreference=<%= image.photo_reference %>&key=<%= process.env.GOOGLE_API %>"
+              class="shadow-1-strong mb-4"
+              alt="google-image"
+              data-aos="slide-left"
+              loading="lazy"
+            />
+          </a>
         </div>
+        <% }) %>
+      </div>
     </div>
+  </div>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.js"></script>
 
 <script>
-    baguetteBox.run('.gallery');
+  baguetteBox.run(".gallery");
 </script>
 
-</body>
-</html>
-
-<%- include("partials/footer") -%>
-
-<%- include("partials/foot") -%>
+<%- include("partials/footer") -%> <%- include("partials/foot") -%>

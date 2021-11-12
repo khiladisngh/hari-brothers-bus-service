@@ -51,7 +51,19 @@
     ]
   },
   {
-    "tourName": "Agra Delhi",
+    "tourName": "Agra Delhi Sightseeing",
+    "tourPlaces": [
+      "Taj Mahal",
+      "Agra Fort",
+      "Fatehpur Sikri",
+      "Raj Ghat",
+      "Red Fort",
+      "India Gate",
+      "Lotus Temple"
+    ]
+  },
+  {
+    "tourName": "Agra Delhi Sightseeing",
     "tourPlaces": [
       "Taj Mahal",
       "Agra Fort",
