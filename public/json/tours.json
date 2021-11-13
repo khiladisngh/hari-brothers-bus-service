@@ -1,79 +1,210 @@
 [
   {
-    "tourName": "Agra Sightseeing",
+    "tourName": "Agra - Sightseeing",
     "tourPlaces": [
       "Agra Fort",
+      "Akbar Tomb",
+      "Anguri Bagh",
+      "Chini Ka Rauza",
+      "Dolphin Water Park",
       "Fatehpur Sikri",
+      "Itimad Ud Daulah Tomb",
+      "Jama Masjid Agra",
+      "Mehtab Bagh",
       "Taj Mahal",
-      "Akbar's Tomb",
-      "Itimad Ud Daulah",
-      "Kailash Mandir"
+      "Taj Museum",
+      "Wildlife Sos"
     ]
   },
   {
-    "tourName": "Mathura Sightseeing",
+    "tourName": "Aligarh - Sightseeing",
     "tourPlaces": [
+      "Aligarh Fort(Bonay Ka Kila)",
+      "Jama Masjid Aligarh",
+      "Naqvi Park "
+    ]
+  },
+  {
+    "tourName": "Allahabad - Sightseeing",
+    "tourPlaces": [
+      "All Saints Cathedral",
+      "Allahabad Fort",
+      "Anand Bhawan",
+      "Khusro Bagh",
+      "Triveni Sangam"
+    ]
+  },
+  {
+    "tourName": "Ayodhya - Sightseeing",
+    "tourPlaces": [
+      "Bahu Begum Ka Maqbara",
+      "Dashrath Bhawan",
+      "Gulab Bari",
+      "Guptar Ghat",
+      "Kanak Bhawan",
+      "Moti Mahal",
+      "Nageshwarnath Temple",
+      "Ram Janmabhoomi",
+      "Tulsi Smarak Bhawan"
+    ]
+  },
+  {
+    "tourName": "Chitrakoot - Sightseeing",
+    "tourPlaces": [
+      "Bharat Kup",
+      "Bharat Milap Mandir",
+      "Ganesh Bagh",
+      "Gupt Godavari",
+      "Hanuman Dhara",
+      "Kalinjar Fort",
+      "Kamadgiri",
+      "Marpha",
+      "Ramghat",
+      "Sati Anusuya Temple",
+      "Sphatik Shila"
+    ]
+  },
+  {
+    "tourName": "Jhansi - Sightseeing",
+    "tourPlaces": [
+      "Barua Sagar Fort",
+      "Jhansi Fort",
+      "Karguanji Jain Temple",
+      "Orchha Wildlife Sanctuary",
+      "Orchha",
+      "Parichha Dam",
+      "Rai Praveen Mahal",
+      "Rani Mahal"
+    ]
+  },
+  {
+    "tourName": "Kanpur - Sightseeing",
+    "tourPlaces": [
+      "Blue World Theme Park",
+      "Iskcon Temple",
+      "Jk Temple",
+      "Kanch Ka Mandir",
+      "Kanpur Memorial Church",
+      "Kanpur Museum",
+      "Mahatma Gandhi Park",
+      "Moti Jheel"
+    ]
+  },
+  {
+    "tourName": "Lucknow - Sightseeing",
+    "tourPlaces": [
+      "Ambedkar Memorial Park",
+      "Bara Imambara",
+      "Begum Hazrat Mahal Park",
+      "Chandrika Devi Temple",
+      "Chota Imambara",
+      "Husainabad Clock Tower",
+      "Indira Gandhi Planetarium",
+      "Jama Masjid Lucknow",
+      "Ramakrishna Math Lucknow",
+      "Rumi Darwaza",
+      "Safed Baradari",
+      "Shah Najaf Imambara",
+      "Shahi Baoli",
+      "Tomb Of Saadat Ali Khan"
+    ]
+  },
+  {
+    "tourName": "Mathura - Sightseeing",
+    "tourPlaces": [
+      "Barsana",
+      "Birla Mandir",
+      "Dauji Mandir",
+      "Dolphin Water World",
+      "Dwarkadheesh Temple",
+      "Govardhan Hill",
+      "Jai Gurudev Mandir",
+      "Jama Masjid Mathura",
+      "Kans Qila",
+      "Kusum Sarovar",
+      "Mathura Museum",
+      "Potara Kund",
+      "Radha Kund",
+      "Radha Vallabh Mandir",
+      "Rangji Mandir",
+      "Shri Krishna Janmasthan Temple",
+      "Shri Nand Yashoda Bhawan",
+      "Vaishno Devi Dham"
+    ]
+  },
+  {
+    "tourName": "Meerut - Sightseeing",
+    "tourPlaces": [
+      "Bhole Ki Jhaal",
+      "Digambar Jain Temple",
+      "Draupadi Ki Rasoi",
+      "Mustafa Castle",
+      "Shapir",
+      "Vidur Ka Tila"
+    ]
+  },
+  {
+    "tourName": "Miscellaneous - Sightseeing",
+    "tourPlaces": [
+      "Bateshwar Temples",
+      "Dewa Sharif",
+      "Dudhwa National Park",
+      "Fort Of Unchagaon",
+      "Nawabganj Bird Sanctuary"
+    ]
+  },
+  {
+    "tourName": "Noida - Sightseeing",
+    "tourPlaces": [
+      "Botanical Garden Noida",
+      "Budhha International Circuit",
+      "Golf Course",
+      "Okhla Bird Sanctuary",
+      "Rashtriya Dalit Prerna Sthal & Green Garden",
+      "Shree Jagannath Temple",
+      "Stupa 18 Art Gallery",
+      "Worlds Of Wonder Water Park"
+    ]
+  },
+  {
+    "tourName": "Varanasi - Sightseeing",
+    "tourPlaces": [
+      "Alamgir Mosque",
+      "Assi Ghat",
+      "Bharat Kala Bhavan Museum",
+      "Bharat Mata Mandir",
+      "Chinese Temple",
+      "Chunar Fort",
+      "Dashashwamedh Ghat",
+      "Durga Temple",
+      "Kashi Vishwanath Temple",
+      "Kedar Ghat",
+      "Lakhaniya Dari Waterfalls",
+      "Manmandir Ghat",
+      "Nepali Temple",
+      "New Vishwanath Temple",
+      "Rajdari Waterfalls",
+      "Sita Samahit Sthal",
+      "St",
+      "Tibetan Temple",
+      "Tulsi Mansa Temple",
+      "Vindham Waterfalls"
+    ]
+  },
+  {
+    "tourName": "Vrindavan - Sightseeing",
+    "tourPlaces": [
+      "Barsana",
+      "Govind Devji Temple",
+      "Iskcon Vrindavan",
+      "Keshi Ghat",
+      "Madan Mohan Temple",
+      "Nandgaon",
+      "Nidhivan",
       "Prem Mandir",
-      "Banke Bihari Mandir",
-      "ISKON Mandir",
-      "Pagla Baba Ka Mandir",
-      "Dwarkadhish Mandir",
-      "Nidhi Van",
-      "Kirti Mandir",
-      "Shri Krishna Janmabhoomi",
-      "Dauji Mandir"
-    ]
-  },
-  {
-    "tourName": "Delhi Sightseeing",
-    "tourPlaces": [
-      "Raj Ghat",
-      "Rail Museum",
-      "Red Fort",
-      "Qutub Minar",
-      "Humayun's Tomb",
-      "Jantar Mantar",
-      "India Gate",
-      "Lotus Temple"
-    ]
-  },
-  {
-    "tourName": "Jaipur Sightseeing",
-    "tourPlaces": [
-      "Hawa Mahal",
-      "Jantar Mantar",
-      "ISKON Temple",
-      "Jal Mahal",
-      "City Palace",
-      "Amer Palace",
-      "Nahargarh Fort",
-      "Albert Hall Museum",
-      "Choki Dhani"
-    ]
-  },
-  {
-    "tourName": "Agra Delhi Sightseeing",
-    "tourPlaces": [
-      "Taj Mahal",
-      "Agra Fort",
-      "Fatehpur Sikri",
-      "Raj Ghat",
-      "Red Fort",
-      "India Gate",
-      "Lotus Temple"
-    ]
-  },
-  {
-    "tourName": "Agra Jaipur Sightseeing",
-    "tourPlaces": [
-      "Taj Mahal",
-      "Agra Fort",
-      "Fatehpur Sikri",
-      "Hawa Mahal",
-      "City Palace",
-      "Jantar Mantar",
-      "Jal Mahal",
-      "Amer Palace"
+      "Radha Raman Mandir",
+      "Shahji Temple",
+      "Shree Rangji Mandir"
     ]
   }
 ]
