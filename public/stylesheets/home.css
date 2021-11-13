@@ -141,6 +141,17 @@
   filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.14))
     drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.12))
     drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.2));
+  border-radius: 18px;
+}
+
+#images-section p > a {
+  color: #035949;
+  text-decoration: none;
+}
+
+#images-section p > a:hover {
+  color: #efb447;
+  text-decoration: none;
 }
 
 /* TESTIMONIALS SECTION */
@@ -168,7 +179,7 @@
   padding: 20px 15px 40px;
   background-color: #efb447;
   text-align: center;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 #contact-section button {

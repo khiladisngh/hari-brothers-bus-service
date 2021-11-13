@@ -37,8 +37,8 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
         >
           <div class="accordion-body">
             <div class="row">
-              <div class="col-sm-12 col-lg-12">
-                <% tour.tourPlaces.forEach((place, index) => { %>
+              <% tour.tourPlaces.forEach((place, index) => { %>
+              <div class="col-sm-12 col-md-6 col-lg-4">
                 <img
                   src="images/tours/<%= place %>.jpg"
                   alt="<% place %>"
@@ -46,8 +46,8 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
                   loading="lazy"
                 />
                 <p class="tour-places h5"><%- place %></p>
-                <% }) %>
               </div>
+              <% }) %>
             </div>
           </div>
         </div>

@@ -1,222 +1,331 @@
-<%- include("partials/header", {title: 'Hari Brothers Bus Service'}) -%>
+<%- include("partials/header", {title: 'Hari Brothers Bus Service'}) -%> <%-
+include("partials/navbar") -%> <%- include("partials/toast") -%>
 
-<%- include("partials/navbar") -%>
-
-<%- include("partials/toast") -%>
-
-<link rel="stylesheet" href="./stylesheets/home.css">
+<link rel="stylesheet" href="./stylesheets/home.css" />
 
 <!-- TITLE SECTION -->
 
 <section id="title-section">
-    <div class="container-xxl flex-wrap flex-md-nowrap">
-        <div class="row">
-            <div class="col-lg-6 p-0">
-                <div class="overlay">
-                    <div class="title-container">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="63"
-                             fill="none" class="vector">
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                  d="M9.94436e-06 6.12464L20.4 3.75485C39.6 1.38506 80.4 -3.35453 120 3.75487C159.6 10.8643 200.4 29.8226 240 40.4867C279.6 51.1508 320.4 53.5206 360 46.4112C399.6 39.3019 440.4 22.7133 480 15.6039C519.6 8.49453 560.4 10.8643 600 14.419C639.6 17.9737 680.4 22.7133 720 21.5284C759.6 20.3435 800.4 13.2342 840 10.8644C879.6 8.49459 920.4 10.8644 960 16.7889C999.6 22.7134 1040.4 32.1926 1080 28.6379C1119.6 25.0832 1160.4 8.49464 1200 6.12485C1239.6 3.75506 1280.4 15.604 1320 19.1587C1359.6 22.7134 1400.4 17.9739 1419.6 15.6041L1440 13.2343L1440 63L1419.6 63C1400.4 63 1359.6 63 1320 63C1280.4 63 1239.6 63 1200 63C1160.4 63 1119.6 62.9999 1080 62.9999C1040.4 62.9999 999.6 62.9999 960 62.9999C920.4 62.9999 879.6 62.9999 840 62.9999C800.4 62.9999 759.6 62.9999 720 62.9999C680.4 62.9999 639.6 62.9999 600 62.9999C560.4 62.9998 519.6 62.9998 480 62.9998C440.4 62.9998 399.6 62.9998 360 62.9998C320.4 62.9998 279.6 62.9998 240 62.9998C200.4 62.9998 159.6 62.9998 120 62.9998C80.4 62.9998 39.6 62.9998 20.4 62.9998L0 62.9997L9.94436e-06 6.12464Z"
-                                  fill="#03A678"/>
-                        </svg>
-                        <div class="container-fluid title-brand p-xs-1 p-md-3 pb-3">
-                            <h1 class="brand hari">Hari Brothers</h1>
-                            <h3>Bus Service</h3>
-                        </div>
-                        <div class="container-fluid title-button px-3">
-                            <div class="row">
-                                <div class="col-12 pt-3">
-                                    <a href="tel:<%= process.env.CALL %>" target="_blank">
-                                        <button type="button"
-                                                class="btn btn-lg button button-text button-yellow">
-                                            <i class="fas fa-phone-alt"></i>
-                                            Call Us
-                                        </button>
-                                    </a>
-                                </div>
-                                <div class="col-12 pt-3">
-                                    <a href="https://api.whatsapp.com/send?phone=<%= process.env.WHATSAPP_RECEIVER %>"
-                                       target="_blank">
-                                        <button type="button"
-                                                class="btn btn-lg button button-text button-green">
-                                            <i class="fab fa-whatsapp"></i>
-                                            Whatsapp
-                                        </button>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  <div class="container-xxl flex-wrap flex-md-nowrap">
+    <div class="row">
+      <div class="col-lg-6 p-0">
+        <div class="overlay">
+          <div class="title-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1440"
+              height="63"
+              fill="none"
+              class="vector"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M9.94436e-06 6.12464L20.4 3.75485C39.6 1.38506 80.4 -3.35453 120 3.75487C159.6 10.8643 200.4 29.8226 240 40.4867C279.6 51.1508 320.4 53.5206 360 46.4112C399.6 39.3019 440.4 22.7133 480 15.6039C519.6 8.49453 560.4 10.8643 600 14.419C639.6 17.9737 680.4 22.7133 720 21.5284C759.6 20.3435 800.4 13.2342 840 10.8644C879.6 8.49459 920.4 10.8644 960 16.7889C999.6 22.7134 1040.4 32.1926 1080 28.6379C1119.6 25.0832 1160.4 8.49464 1200 6.12485C1239.6 3.75506 1280.4 15.604 1320 19.1587C1359.6 22.7134 1400.4 17.9739 1419.6 15.6041L1440 13.2343L1440 63L1419.6 63C1400.4 63 1359.6 63 1320 63C1280.4 63 1239.6 63 1200 63C1160.4 63 1119.6 62.9999 1080 62.9999C1040.4 62.9999 999.6 62.9999 960 62.9999C920.4 62.9999 879.6 62.9999 840 62.9999C800.4 62.9999 759.6 62.9999 720 62.9999C680.4 62.9999 639.6 62.9999 600 62.9999C560.4 62.9998 519.6 62.9998 480 62.9998C440.4 62.9998 399.6 62.9998 360 62.9998C320.4 62.9998 279.6 62.9998 240 62.9998C200.4 62.9998 159.6 62.9998 120 62.9998C80.4 62.9998 39.6 62.9998 20.4 62.9998L0 62.9997L9.94436e-06 6.12464Z"
+                fill="#03A678"
+              />
+            </svg>
+            <div class="container-fluid title-brand p-xs-1 p-md-3 pb-3">
+              <h1 class="brand hari">Hari Brothers</h1>
+              <h3>Bus Service</h3>
             </div>
-            <div class="col-lg-6 p-0">
-                <div class="image-container">
-                    <img src="https://images.pexels.com/photos/3361480/pexels-photo-3361480.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
-                         alt="taj-mahal">
+            <div class="container-fluid title-button px-3">
+              <div class="row">
+                <div class="col-12 pt-3">
+                  <a href="tel:<%= process.env.CALL %>" target="_blank">
+                    <button
+                      type="button"
+                      class="btn btn-lg button button-text button-yellow"
+                    >
+                      <i class="fas fa-phone-alt"></i>
+                      Call Us
+                    </button>
+                  </a>
                 </div>
+                <div class="col-12 pt-3">
+                  <a
+                    href="https://api.whatsapp.com/send?phone=<%= process.env.WHATSAPP_RECEIVER %>"
+                    target="_blank"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-lg button button-text button-green"
+                    >
+                      <i class="fab fa-whatsapp"></i>
+                      Whatsapp
+                    </button>
+                  </a>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+      <div class="col-lg-6 p-0">
+        <div class="image-container">
+          <img
+            src="https://images.pexels.com/photos/3361480/pexels-photo-3361480.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
+            alt="taj-mahal"
+          />
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- FEATURES SECTION -->
 
 <section id="features-section">
-    <div class="container-xxl flex-wrap flex-md-nowrap">
-        <div class="heading pb-5" data-aos="fade-left">
-            <h1>Best bus travel experience from Agra.</h1>
-        </div>
-        <div class="row features">
-            <div class="col-sm-6 pb-4 d-flex flex-column justify-content-between" data-aos="fade-right">
-                <h4 class="pb-2">Comfort</h4>
-                <p>We have drivers who are well trained and experienced in the field of bus
-                    transportation. We have a fleet of comfortable buses with comfortable seats.</p>
-                <a href="/gallery">
-                    <button type="button"
-                            class="btn btn-lg button button-text button-green">
-                        <i class="fas fa-bus"></i>
-                        <span>Gallery</span>
-                    </button>
-                </a>
-            </div>
-            <div class="col-sm-6 pb-4 d-flex flex-column justify-content-between" data-aos="fade-left">
-                <h4 class="pb-2">Hygiene</h4>
-                <p>Buses are cleaned and washed thoroughly before we send them to you.</p>
-                <a href="/gallery">
-                    <button type="button"
-                            class="btn btn-lg button button-text button-green">
-                        <i class="fas fa-bus"></i>
-                        <span>Tours</span>
-                    </button>
-                </a>
-            </div>
-            <div class="col-sm-6 pb-4 d-flex flex-column justify-content-between" data-aos="fade-right">
-                <h4 class="pb-2">All India</h4>
-                <p>We cover all the cities of India weather it is in Jammu & Kashmir or in West Bengal, we've got you covered.</p>
-                <a href="/tours">
-                    <button type="button"
-                            class="btn btn-lg button button-text button-green">
-                        <i class="fas fa-bus"></i>
-                        <span>Tours</span>
-                    </button>
-                </a>
-            </div>
-            <div class="col-sm-6 pb-4 d-flex flex-column justify-content-between" data-aos="fade-left">
-                <h4 class="pb-2">Affordable</h4>
-                <p>Most affordable bus service in all of Agra.</p>
-                <a href="/tours">
-                    <button type="button"
-                            class="btn btn-lg button button-text button-green">
-                        <i class="fas fa-bus"></i>
-                        <span>Tours</span>
-                    </button>
-                </a>
-            </div>
-        </div>
+  <div class="container-xxl flex-wrap flex-md-nowrap">
+    <div class="heading pb-5" data-aos="fade-left">
+      <h1>Best bus travel experience from Agra.</h1>
     </div>
+    <div class="row features">
+      <div
+        class="col-sm-6 pb-4 d-flex flex-column justify-content-between"
+        data-aos="fade-right"
+      >
+        <h4 class="pb-2">Comfort</h4>
+        <p>
+          We have drivers who are well trained and experienced in the field of
+          bus transportation. We have a fleet of comfortable buses with
+          comfortable seats.
+        </p>
+        <a href="/gallery">
+          <button
+            type="button"
+            class="btn btn-lg button button-text button-green"
+          >
+            <i class="fas fa-bus"></i>
+            <span>Gallery</span>
+          </button>
+        </a>
+      </div>
+      <div
+        class="col-sm-6 pb-4 d-flex flex-column justify-content-between"
+        data-aos="fade-left"
+      >
+        <h4 class="pb-2">Hygiene</h4>
+        <p>
+          Buses are cleaned and washed thoroughly before we send them to you.
+        </p>
+        <a href="/gallery">
+          <button
+            type="button"
+            class="btn btn-lg button button-text button-green"
+          >
+            <i class="fas fa-bus"></i>
+            <span>Tours</span>
+          </button>
+        </a>
+      </div>
+      <div
+        class="col-sm-6 pb-4 d-flex flex-column justify-content-between"
+        data-aos="fade-right"
+      >
+        <h4 class="pb-2">All India</h4>
+        <p>
+          We cover all the cities of India weather it is in Jammu & Kashmir or
+          in West Bengal, we've got you covered.
+        </p>
+        <a href="/tours">
+          <button
+            type="button"
+            class="btn btn-lg button button-text button-green"
+          >
+            <i class="fas fa-bus"></i>
+            <span>Tours</span>
+          </button>
+        </a>
+      </div>
+      <div
+        class="col-sm-6 pb-4 d-flex flex-column justify-content-between"
+        data-aos="fade-left"
+      >
+        <h4 class="pb-2">Affordable</h4>
+        <p>Most affordable bus service in all of Agra.</p>
+        <a href="/tours">
+          <button
+            type="button"
+            class="btn btn-lg button button-text button-green"
+          >
+            <i class="fas fa-bus"></i>
+            <span>Tours</span>
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
 </section>
 
 <div class="gradient shadow-dp-6">
+  <!-- IMAGES SECTION -->
 
-    <!-- IMAGES SECTION -->
-
-    <section id="images-section">
-        <div class="container-xxl flex-wrap flex-md-nowrap images-container">
-            <div class="row">
-                <div class="col-md-6" data-aos="fade-right">
-                    <img class="p-2" src="./images/marriage-couple.png" alt="marriage" loading="lazy">
-                    <div class="row px-3">
-                        <div class="col-12">
-                            <h2>For Marriages</h2>
-                        </div>
-                        <div class="col-12">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 py-2" data-aos="fade-left">
-                    <div class="row px-3">
-                        <div class="col-12">
-                            <h2>For Tour Travels</h2>
-                        </div>
-                        <div class="col-12">
-                        </div>
-                    </div>
-                    <img class="p-2" src="./images/harkipaudi.png" alt="marriage" loading="lazy">
-                </div>
-            </div>
+  <section id="images-section">
+    <div class="container-xxl flex-wrap flex-md-nowrap images-container">
+      <div class="row">
+        <div class="col-md-6" data-aos="fade-right">
+          <h2>For Marriages</h2>
+          <img
+            class="p-2"
+            id="wedding-image"
+            src="./images/marriage-couple.png"
+            alt="marriage"
+            loading="lazy"
+          />
+          <em class="text-white">
+            <p>
+              Photo by
+              <a class="wedding-photographer-link" href=""></a> on
+              <a href="https://unsplash.com/">Unsplash</a>
+            </p>
+          </em>
         </div>
-    </section>
-
-    <!-- TESTIMONIALS SECTION -->
-
-    <section id="testimonials-section">
-        <div class="container-xxl flex-wrap flex-md-nowrap">
-            <h2 class="p-5">Happy Travellers</h2>
-            <div class="testimonial-container shadow-dp-8">
-                <div class="row">
-                    <div class="col-2 d-flex justify-content-center align-items-center">
-                        <i class="fas fa-quote-left align-middle"></i>
-                    </div>
-                    <div class="col d-flex justify-content-center align-items-center">
-                        <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                <% testimonials.forEach(function (item, index) { %>
-                                    <% if ( index === 0) { %>
-                                <div class="carousel-item active">
-                                    <% } else { %>
-                                    <div class="carousel-item">
-                                        <% } %>
-                                        <p><%= item.text %></p>
-                                        <em class="testimonials-author">
-                                            - <%= item.author %>
-                                        </em>
-                                    </div>
-                                    <% }) %>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-2 d-flex justify-content-center align-items-center">
-                            <i class="fas fa-quote-right"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-md-6" data-aos="fade-left">
+          <h2>For Sightseeing</h2>
+          <img
+            class="p-2"
+            id="travel-image"
+            src="./images/harkipaudi.png"
+            alt="tour"
+            loading="lazy"
+          />
+          <em class="text-white">
+            <p>
+              Photo by
+              <a class="travel-photographer-link" href=""></a> on
+              <a href="https://unsplash.com/">Unsplash</a>
+            </p>
+          </em>
         </div>
-    </section>
+        <div class="col-md-6" data-aos="fade-right">
+          <h2>For Picnics</h2>
+          <img
+            class="p-2"
+            id="heritage-image"
+            src="./images/harkipaudi.png"
+            alt="tour"
+            loading="lazy"
+          />
+          <em class="text-white">
+            <p>
+              Photo by
+              <a class="heritage-photographer-link" href=""></a> on
+              <a href="https://unsplash.com/">Unsplash</a>
+            </p>
+          </em>
+        </div>
+        <div class="col-md-6" data-aos="fade-left">
+          <h2>For Tour Travels</h2>
+          <img
+            class="p-2"
+            id="tour-image"
+            src="./images/harkipaudi.png"
+            alt="tour"
+            loading="lazy"
+          />
+          <em class="text-white">
+            <p>
+              Photo by
+              <a class="tour-photographer-link" href=""></a> on
+              <a href="https://unsplash.com/">Unsplash</a>
+            </p>
+          </em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS SECTION -->
+
+  <section id="testimonials-section">
+    <div class="container-xxl flex-wrap flex-md-nowrap">
+      <h2 class="p-5">Happy Travellers</h2>
+      <div class="testimonial-container shadow-dp-8">
+        <div class="row">
+          <div class="col-2 d-flex justify-content-center align-items-center">
+            <i class="fas fa-quote-left align-middle"></i>
+          </div>
+          <div class="col d-flex justify-content-center align-items-center">
+            <div
+              id="carouselExampleSlidesOnly"
+              class="carousel slide"
+              data-bs-ride="carousel"
+            >
+              <div class="carousel-inner">
+                <% testimonials.forEach(function (item, index) { %> <% if (
+                index === 0) { %>
+                <div class="carousel-item active">
+                  <% } else { %>
+                  <div class="carousel-item">
+                    <% } %>
+                    <p><%= item.text %></p>
+                    <em class="testimonials-author"> - <%= item.author %> </em>
+                  </div>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+            <div class="col-2 d-flex justify-content-center align-items-center">
+              <i class="fas fa-quote-right"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
 <section id="contact-section">
-    <div class="container-xxl flex-wrap flex-md-nowrap" data-aos="slide-up">
-        <div class="row">
-            <h2 class="my-auto">Book Your Next Journey. Give Us A Call.</h2>
-            <div class="col-md-6 p-2 p-xl-5">
-                <a href="tel:<%= process.env.CALL %>" target="_blank">
-                    <button class="btn btn-lg button button-text button-yellow">
-                        Call Us.
-                        <i class="fas fa-phone"></i>
-                    </button>
-                </a>
-            </div>
+  <div class="container-xxl flex-wrap flex-md-nowrap" data-aos="slide-up">
+    <div class="row">
+      <h2 class="my-auto">Book Your Next Journey. Give Us A Call.</h2>
+      <div class="col-md-6 p-2 p-xl-5">
+        <a href="tel:<%= process.env.CALL %>" target="_blank">
+          <button class="btn btn-lg button button-text button-yellow">
+            Call Us.
+            <i class="fas fa-phone"></i>
+          </button>
+        </a>
+      </div>
 
-            <div class="col-md-6 p-2 p-xl-5">
-                <a href="/contact">
-                    <button class="btn btn-lg button button-text button-green">
-                        Contact Us.
-                    </button>
-                </a>
-            </div>
-
-        </div>
+      <div class="col-md-6 p-2 p-xl-5">
+        <a href="/contact">
+          <button class="btn btn-lg button button-text button-green">
+            Contact Us.
+          </button>
+        </a>
+      </div>
     </div>
+  </div>
 </section>
 
 <script>
-    $(document).ready(function () {
-
+  function getUnsplashImage(query, selector) {
+    $.ajax({
+      url: `https://api.unsplash.com/photos/random?`,
+      data: {
+        query: query,
+        orientation: "landscape",
+      },
+      headers: {
+        Authorization: "Client-ID <%= process.env.UNSPLASH_ACCESS_KEY %>",
+      },
+      success: function (data) {
+        $("#" + selector + "-image").attr("src", data.urls.regular);
+        $("." + selector + "-photographer-link").attr(
+          "href",
+          data.user.links.html
+        );
+        $("." + selector + "-photographer-link").append(data.user.name);
+      },
     });
+  }
+
+  getUnsplashImage("indian wedding marriage", "wedding");
+  getUnsplashImage("indian monuments", "travel");
+  getUnsplashImage("indian heritage", "heritage");
+  getUnsplashImage("indian tour", "tour");
 </script>
 
-<%- include("partials/footer") -%>
-
-<%- include("partials/foot") -%>
+<%- include("partials/footer") -%> <%- include("partials/foot") -%>
