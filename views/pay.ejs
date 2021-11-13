@@ -11,19 +11,25 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
       <h2 class="p-3">Pay Us Online</h2>
       <h3>+917017140452</h3>
       <div class="pay-buttons p-3 d-flex flex-column justify-content-between">
-        <a href="https://www.paytm.com/" target="_blank">
-          <button type="button" class="btn btn-lg button button-text">
-            Paytm
-          </button>
-        </a>
-        <a href="https://pay.google.com/" target="_blank">
+        <a
+          href="upi://pay?pa=gopalvishu1@okicici&pn=Gopal%20Singh&aid=uGICAgIC3js2XOA"
+          target="_blank"
+        >
           <button
             type="button"
             class="btn btn-lg button button-text button-yellow"
-          >
-            <i class="fab fa-google-pay fa-2x"></i>
-          </button>
+          ></button>
         </a>
+        <div class="qr-code-container">
+          <div class="qr-code"></div>
+          <em class="text-muted">
+            <small>
+              <i>
+                <b>Note:</b> Please use the above UPI ID to pay.
+              </i>
+            </small>
+        </div>
+
       </div>
     </div>
   </div>

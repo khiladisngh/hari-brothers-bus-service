@@ -15,7 +15,7 @@
     "tourPlaces": [
       "Prem Mandir",
       "Banke Bihari Mandir",
-      "ISKON Mandir", 
+      "ISKON Mandir",
       "Pagla Baba Ka Mandir",
       "Dwarkadhish Mandir",
       "Nidhi Van",
@@ -44,6 +44,7 @@
       "Jantar Mantar",
       "ISKON Temple",
       "Jal Mahal",
+      "City Palace",
       "Amer Palace",
       "Nahargarh Fort",
       "Albert Hall Museum",
@@ -63,15 +64,16 @@
     ]
   },
   {
-    "tourName": "Agra Delhi Sightseeing",
+    "tourName": "Agra Jaipur Sightseeing",
     "tourPlaces": [
       "Taj Mahal",
       "Agra Fort",
       "Fatehpur Sikri",
-      "Raj Ghat",
-      "Red Fort",
-      "India Gate",
-      "Lotus Temple"
+      "Hawa Mahal",
+      "City Palace",
+      "Jantar Mantar",
+      "Jal Mahal",
+      "Amer Palace"
     ]
   }
 ]
