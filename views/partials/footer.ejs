@@ -10,22 +10,25 @@
       <div class="icons d-flex justify-content-center">
         <div class="row">
           <div class="col">
-            <a href="https://www.instagram.com">
+            <a href="https://www.instagram.com/haribusservice" target="_blank">
               <i class="cp-icon fab fa-instagram fa-2x"></i
             ></a>
           </div>
           <div class="col">
-            <a href="https://www.facebook.com">
+            <a href="https://www.facebook.com/haribusservice" target="_blank">
               <i class="cp-icon fab fa-facebook-square fa-2x"></i
             ></a>
           </div>
           <div class="col">
-            <a href="https://www.whatsapp.com">
+            <a
+              href="https://api.whatsapp.com/send?phone=<%= process.env.WHATSAPP_RECEIVER %>"
+              target="_blank"
+            >
               <i class="cp-icon fab fa-whatsapp-square fa-2x"></i
             ></a>
           </div>
           <div class="col">
-            <a href="tel:9412343701">
+            <a href="tel:<%= process.env.CALL %>" target="_blank">
               <i class="cp-icon fas fa-phone-square-alt fa-2x"></i
             ></a>
           </div>
