@@ -72,6 +72,10 @@
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
+  #nav-section {
+    width: 100vw;
+  }
+
   #nav-section .nav-container {
     padding: 0 65px;
   }
