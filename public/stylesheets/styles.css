@@ -71,6 +71,21 @@ body {
   color: #2c3533;
 }
 
+body::-webkit-scrollbar {
+  width: 8px;               /* width of the entire scrollbar */
+}
+
+body::-webkit-scrollbar-track {
+  background: #f2c6a0;
+
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #035949;    /* color of the scroll thumb */
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 2px solid #f2c6a0;  /* creates padding around scroll thumb */
+}
+
 img {
   animation: fadeIn 1s ease-in-out;
 }
