@@ -1,9 +1,9 @@
 #pay-section {
   text-align: center;
+  z-index: 10;
   padding: 85px 15px 60px;
   color: aliceblue;
   background: #efb447;
-  height: 100vh;
   overflow-x: hidden;
 }
 
@@ -41,4 +41,11 @@
   height: 80%;
   background: url("../svg/upi_pay_gopal.svg") no-repeat center;
   background-size: auto;
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  #pay-section {
+    padding: 125px 50px 100px;
+  }
 }

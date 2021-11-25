@@ -19,3 +19,10 @@
 #about-section .about-container p {
   color: #fff;
 }
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  #about-section {
+    padding: 125px 50px 100px;
+  }
+}
