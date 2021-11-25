@@ -1,6 +1,6 @@
 #nav-section {
   position: fixed;
-  width: calc(100vw - 8px);
+  width: 100vw;
   background-color: #f2c6a0;
   z-index: 100;
 }
@@ -73,7 +73,7 @@
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
   #nav-section {
-    width: 100vw;
+    width: calc(100vw - 8px);
   }
 
   #nav-section .nav-container {
