@@ -64,6 +64,12 @@
   transition: height 0.35s ease;
 }
 
+@media only screen and (hover: none) and (pointer: coarse) {
+  #nav-section {
+    width: 100vw;
+  }
+}
+
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
   #nav-section .nav-container {
