@@ -4,276 +4,242 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
 <!--CONTACT SECTION-->
 
 <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
 />
-<link rel="stylesheet" href="./stylesheets/contact.css" />
+<link rel="stylesheet" href="./stylesheets/contact.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
 <section id="contact-section" class="shadow-dp-6">
-  <div class="container-xxl flex-wrap flex-md-nowrap">
-    <div class="contact-container shadow-dp-8">
-      <h2 class="pt-3" data-aos="fade-down">
-        You’re a call away from a great travel experience.
-      </h2>
-      <div class="row position-relative">
-        <div class="col-lg-6 contact-info" data-aos="fade-right">
-          <div class="row pb-5 text-sm-start">
-            <div class="col-sm-6 d-flex flex-column justify-content-between">
-              <h4 class="heading">Phone</h4>
-              <ul class="number">
-                <li>+919411460750</li>
-                <li>+919412343701</li>
-                <li>+917017140452</li>
-                <li>+919458205009</li>
-              </ul>
-            </div>
-            <div class="col-sm-6 d-flex flex-column justify-content-between">
-              <a href="tel:<%= process.env.CALL %>" target="_blank">
-                <button
-                  type="button"
-                  class="btn btn-lg button button-text button-yellow"
-                >
-                  <i class="fas fa-phone-alt"></i>
-                  Call Us
-                </button>
-              </a>
-              <a
-                href="https://api.whatsapp.com/send?phone=<%= process.env.WHATSAPP %>"
-                target="_blank"
-              >
-                <button
-                  type="button"
-                  class="btn btn-lg button button-text button-green"
-                >
-                  <i class="fab fa-whatsapp"></i>
-                  Whatsapp
-                </button>
-              </a>
-            </div>
-          </div>
-          <div class="row text-sm-start">
-            <div class="col-sm-6 d-flex flex-column justify-content-between">
-              <h4 class="heading">Address</h4>
-              <p class="text address">
-                Shop No - 573, Sultanpura Station Road, Agra, Uttar Pradesh -
-                282001
-              </p>
-            </div>
-            <div class="col-sm-6 d-flex flex-column justify-content-center">
-              <a
-                href="https://www.google.com/maps/dir/27.1395504,78.0020973/hari+brothers+bus+service/@27.1488336,77.9953704,15z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x397476c27e53cad9:0xd857d1f4d56b97d9!2m2!1d77.998326!2d27.158281"
-              >
-                <button
-                  type="button"
-                  class="btn button button-text button-yellow"
-                >
-                  <i class="fas fa-compass"></i>
-                  Get Directions
-                </button>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="line"></div>
-        <div class="col-lg-6 message-form" data-aos="fade-left">
-          <form action="contact" method="post" class="row g-3">
-            <div class="form-floating col-md-6">
-              <input
-                type="text"
-                name="firstName"
-                class="form-control"
-                id="inputFirstName"
-                placeholder="First Name"
-                required
-              />
-              <label for="inputFirstName">First Name</label>
-            </div>
-            <div class="form-floating col-md-6">
-              <input
-                type="text"
-                name="lastName"
-                class="form-control"
-                id="inputLastName"
-                placeholder="Last Name"
-                required
-              />
-              <label for="inputLastName">Last Name</label>
-            </div>
-            <div class="form-floating col-12">
-              <input
-                type="number"
-                name="phoneNumber"
-                class="form-control"
-                id="inputNumber"
-                placeholder="+91"
-                required
-              />
-              <label for="inputNumber">Phone Number</label>
-            </div>
-            <div class="form-floating col-md-6">
-              <select
-                id="inputFromState"
-                name="fromState"
-                class="form-select"
-                required
-              >
-                <option selected>Select State</option>
-              </select>
-              <label for="inputFromState">From State</label>
-            </div>
-            <div class="form-floating col-md-6">
-              <select
-                id="inputFromCity"
-                name="fromCity"
-                class="form-select"
-                required
-              >
-                <option selected>Select City</option>
-              </select>
-              <label for="inputFromCity">From City</label>
-            </div>
-            <div class="form-floating col-md-6">
-              <select
-                id="inputToState"
-                name="toState"
-                class="form-select"
-                required
-              >
-                <option selected>Select State</option>
-              </select>
-              <label for="inputToState">To State</label>
-            </div>
-            <div class="form-floating col-md-6">
-              <select
-                id="inputToCity"
-                name="toCity"
-                class="form-select"
-                required
-              >
-                <option selected>Select City</option>
-              </select>
-              <label for="inputToCity">To City</label>
-            </div>
-            <div class="form-floating col-md-12">
-              <label for="date"></label>
-              <div class="input-group date" id="datepicker">
-                <input
-                  type="text"
-                  name="date"
-                  class="form-date form-control"
-                  placeholder="Date"
-                />
-                <span class="input-group-append">
+    <div class="container-xxl flex-wrap flex-md-nowrap">
+        <div class="contact-container shadow-dp-8">
+            <h2 class="pt-3" data-aos="fade-down">
+                You’re a call away from a great travel experience.
+            </h2>
+            <div class="row position-relative">
+                <div class="col-lg-6 contact-info" data-aos="fade-right">
+                    <div class="row pb-5 text-sm-start">
+                        <div class="col-sm-6 d-flex flex-column justify-content-between">
+                            <h4 class="heading">Phone</h4>
+                            <ul class="number">
+                                <li>+919411460750</li>
+                                <li>+919412343701</li>
+                                <li>+917017140452</li>
+                                <li>+919458205009</li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6 d-flex flex-column justify-content-between">
+                            <a href="tel:<%= process.env.CALL %>" target="_blank">
+                                <button
+                                        type="button"
+                                        class="btn btn-lg button button-text button-yellow"
+                                >
+                                    <i class="fas fa-phone-alt"></i>
+                                    Call Us
+                                </button>
+                            </a>
+                            <a
+                                    href="https://api.whatsapp.com/send?phone=<%= process.env.WHATSAPP %>"
+                                    target="_blank"
+                            >
+                                <button
+                                        type="button"
+                                        class="btn btn-lg button button-text button-green"
+                                >
+                                    <i class="fab fa-whatsapp"></i>
+                                    Whatsapp
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row text-sm-start">
+                        <div class="col-sm-6 d-flex flex-column justify-content-between">
+                            <h4 class="heading">Address</h4>
+                            <p class="text address">
+                                Shop No - 573, Sultanpura Station Road, Agra, Uttar Pradesh -
+                                282001
+                            </p>
+                        </div>
+                        <div class="col-sm-6 d-flex flex-column justify-content-center">
+                            <a
+                                    href="https://www.google.com/maps/dir/27.1395504,78.0020973/hari+brothers+bus+service/@27.1488336,77.9953704,15z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x397476c27e53cad9:0xd857d1f4d56b97d9!2m2!1d77.998326!2d27.158281"
+                            >
+                                <button
+                                        type="button"
+                                        class="btn button button-text button-yellow"
+                                >
+                                    <i class="fas fa-compass"></i>
+                                    Get Directions
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="col-lg-6 message-form" data-aos="fade-left">
+                    <form action="contact" method="post" class="row g-3">
+                        <div class="form-floating col-md-6">
+                            <input
+                                    type="text"
+                                    name="firstName"
+                                    class="form-control"
+                                    id="inputFirstName"
+                                    placeholder="First Name"
+                                    required
+                            />
+                            <label for="inputFirstName">First Name</label>
+                        </div>
+                        <div class="form-floating col-md-6">
+                            <input
+                                    type="text"
+                                    name="lastName"
+                                    class="form-control"
+                                    id="inputLastName"
+                                    placeholder="Last Name"
+                                    required
+                            />
+                            <label for="inputLastName">Last Name</label>
+                        </div>
+                        <div class="form-floating col-12">
+                            <input
+                                    type="number"
+                                    name="phoneNumber"
+                                    class="form-control"
+                                    id="inputNumber"
+                                    placeholder="+91"
+                                    required
+                            />
+                            <label for="inputNumber">Phone Number</label>
+                        </div>
+                        <div class="form-floating col-md-6">
+                            <select
+                                    id="inputFromState"
+                                    name="fromState"
+                                    class="form-select"
+                                    required
+                            >
+                                <option selected>Select State</option>
+                            </select>
+                            <label for="inputFromState">From State</label>
+                        </div>
+                        <div class="form-floating col-md-6">
+                            <select
+                                    id="inputFromCity"
+                                    name="fromCity"
+                                    class="form-select"
+                                    required
+                            >
+                                <option selected>Select City</option>
+                            </select>
+                            <label for="inputFromCity">From City</label>
+                        </div>
+                        <div class="form-floating col-md-6">
+                            <select
+                                    id="inputToState"
+                                    name="toState"
+                                    class="form-select"
+                                    required
+                            >
+                                <option selected>Select State</option>
+                            </select>
+                            <label for="inputToState">To State</label>
+                        </div>
+                        <div class="form-floating col-md-6">
+                            <select
+                                    id="inputToCity"
+                                    name="toCity"
+                                    class="form-select"
+                                    required
+                            >
+                                <option selected>Select City</option>
+                            </select>
+                            <label for="inputToCity">To City</label>
+                        </div>
+                        <div class="form-floating col-md-12">
+                            <label for="date"></label>
+                            <div class="input-group date" id="datepicker">
+                                <input
+                                        type="text"
+                                        name="date"
+                                        class="form-date form-control"
+                                        placeholder="Date"
+                                />
+                                <span class="input-group-append">
                   <span class="input-group-text bg-white d-block">
                     <i class="fa fa-calendar"></i>
                   </span>
                 </span>
-              </div>
-            </div>
-            <div class="form-floating col-12">
+                            </div>
+                        </div>
+                        <div class="form-floating col-12">
               <textarea
-                class="form-control"
-                name="message"
-                placeholder="Leave a comment here"
-                id="floatingTextarea2"
-                style="height: 100px"
-                required
+                      class="form-control"
+                      name="message"
+                      placeholder="Leave a comment here"
+                      id="floatingTextarea2"
+                      style="height: 100px"
+                      required
               ></textarea>
-              <label for="floatingTextarea2">Ask us for your next trip</label>
+                            <label for="floatingTextarea2">Ask us for your next trip</label>
+                        </div>
+                        <div class="col-12">
+                            <button
+                                    type="submit"
+                                    class="btn button button-text button-yellow"
+                            >
+                                Get A Quote
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="col-12">
-              <button
-                type="submit"
-                class="btn button button-text button-yellow"
-              >
-                Get A Quote
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <section id="map-section">
-  <div class="container-fluid p-0">
-    <iframe
-      src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d4013.563209706147!2d77.99634320713339!3d27.15774636359784!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xd857d1f4d56b97d9!2sHari%20Brothers%20Bus%20Service!5e0!3m2!1sen!2sin!4v1634727315207!5m2!1sen!2sin"
-      width="100%"
-      height="500"
-      style="border: 0"
-      allowfullscreen=""
-      loading="lazy"
-    ></iframe>
-  </div>
+    <div class="container-fluid p-0">
+        <iframe
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d4013.563209706147!2d77.99634320713339!3d27.15774636359784!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xd857d1f4d56b97d9!2sHari%20Brothers%20Bus%20Service!5e0!3m2!1sen!2sin!4v1634727315207!5m2!1sen!2sin"
+                width="100%"
+                height="500"
+                style="border: 0"
+                allowfullscreen=""
+                loading="lazy"
+        ></iframe>
+    </div>
 </section>
 
 <script>
   $(document).ready(function () {
-    function load_json_data(id, stateName) {
-      let htmlCode = "";
-      $.getJSON("json/indianStates.json", function (data) {
-        if (stateName) {
-          data["states"].forEach(function (state) {
-            if (state["name"] === stateName) {
-              let districts = state["districts"];
-              $.each(districts, (key, value) => {
-                htmlCode +=
-                  '<option value="' +
-                  value["name"] +
-                  '">' +
-                  value["name"] +
-                  "</option>";
-              });
-            }
+      // Load states from json file.
+      $.getJSON("/json/indianStates.json", function (data) {
+          $.each(data["states"], function (key, value) {
+              $("#inputFromState").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
+              $("#inputToState").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
           });
-        } else {
-          let states = data["states"];
-          $.each(states, (key, value) => {
-            htmlCode +=
-              '<option value="' +
-              value["name"] +
-              '">' +
-              value["name"] +
-              "</option>";
-          });
-        }
-        $("#" + id).html(htmlCode);
       });
-    }
-
-    $(document).on("click", "#inputFromState", () => {
-      load_json_data("inputFromState");
-    });
-    $(document).on("click", "#inputToState", () => {
-      load_json_data("inputToState");
-    });
-
-    $(document).on("change", "#inputFromState", () => {
-      let countryID = $("#inputFromState").val();
-      if (countryID !== "") {
-        load_json_data("inputFromCity", countryID);
-      } else {
-        $("#inputFromCity").html('<option value="">Select City</option>');
-      }
-    });
-    $(document).on("change", "#inputToState", () => {
-      let countryID = $("#inputToState").val();
-      if (countryID !== "") {
-        load_json_data("inputToCity", countryID);
-      } else {
-        $("#inputFromCity").html('<option value="">Select City</option>');
-      }
-    });
+      // Load cities from json file based on selected state.
+      $(document).on("change", "#inputFromState", () => {
+          $("#inputFromCity").empty().append("<option selected>Select City</option>");
+          $.getJSON("/json/indianStates.json", function (data) {
+              $.each(data["states"], function (key, value) {
+                  if (value["name"] === $("#inputFromState").val()) {
+                      $.each(value["districts"], function (key, value) {
+                          $("#inputFromCity").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
+                          $("#inputToCity").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
+                      });
+                  }
+              });
+          });
+      });
   });
 </script>
 
 <script type="text/javascript">
-  $(function () {
-    $("#datepicker").datepicker();
-  });
+    $(function () {
+        $("#datepicker").datepicker();
+    });
 </script>
 
 <%- include("partials/footer") -%> <%- include("partials/foot") -%>
