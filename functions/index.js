@@ -1,5 +1,10 @@
 require("dotenv").config();
 
+const functions = require("firebase-functions");
+const firebase = require("firebase-admin");
+
+const firebaseApp = firebase.initializeApp(functions.config().firebase);
+
 const _ = require("lodash");
 const fs = require("fs");
 const ejs = require("ejs");
@@ -8,12 +13,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const logger = require("morgan");
 const request = require("request");
+const engines = require("consolidate");
 const serveIndex = require("serve-index");
-const createError = require("http-errors");
 const cookieParser = require("cookie-parser");
+const createError = require("http-errors");
 
 // view engine setup
 const app = express();
+app.engine("html", engines.ejs);
+app.set("views", "./views");
 app.set("view engine", "ejs");
 
 app.use(express.static("public"));
@@ -21,11 +29,10 @@ app.use(logger("tiny"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use("/images", serveIndex(path.join(__dirname, "/images")));
 
 mongoURI = `mongodb+srv://dbAdmin:${process.env.MONGODB_ADMIN_KEY}@cluster0.rhtnn.mongodb.net/website?retryWrites=true&w=majority`;
 mongoLocalURI = `mongodb://localhost:27017/hari-brothers-bus-service`;
-mongoose.connect(mongoURI, (err) => {
+mongoose.connect(mongoLocalURI, (err) => {
   if (err) {
     console.log(err);
   }
@@ -154,7 +161,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-const server = app.listen(process.env.PORT || 3000, () => {
-  const port = server.address().port;
-  console.log(`Express is working on port ${port}`);
-});
+exports.app = functions.https.onRequest(app);

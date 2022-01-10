@@ -5,6 +5,7 @@
   color: aliceblue;
   background: #efb447;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 #pay-section .pay-container {
