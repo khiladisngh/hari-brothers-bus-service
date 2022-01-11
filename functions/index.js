@@ -2,9 +2,15 @@ require("dotenv").config();
 
 const functions = require("firebase-functions");
 const firebase = require("firebase-admin");
+const config = functions.config();
 
-const firebaseApp = firebase.initializeApp(functions.config().firebase);
+const firebaseApp = firebase.initializeApp(config.firebase);
 const db = firebaseApp.firestore();
+
+// Porting envs from firebase config
+for (const key in config.envs) {
+    process.env[key.toUpperCase()] = config.envs[key];
+}
 
 const _ = require("lodash");
 const fs = require("fs");
