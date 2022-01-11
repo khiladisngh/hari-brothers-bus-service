@@ -9,13 +9,10 @@ const db = firebaseApp.firestore();
 const _ = require("lodash");
 const fs = require("fs");
 const ejs = require("ejs");
-const path = require("path");
 const express = require("express");
-const mongoose = require("mongoose");
 const logger = require("morgan");
 const request = require("request");
 const engines = require("consolidate");
-const serveIndex = require("serve-index");
 const cookieParser = require("cookie-parser");
 const createError = require("http-errors");
 
@@ -44,6 +41,7 @@ app.route("/").get((req, res) => {
                 snapshot.forEach((doc) => {
                     testimonials.push(doc.data());
                 });
+                res.set("Cache-Control", "public, max-age=300, s-maxage=600");
                 res.render("home", {
                     testimonials: testimonials,
                 });
@@ -64,6 +62,7 @@ app.route("/tours").get((req, res) => {
                 snapshot.forEach((doc) => {
                     tours.push(doc.data());
                 });
+                res.set("Cache-Control", "public, max-age=300, s-maxage=600");
                 res.render("tours", {
                     toursData: tours,
                 });
@@ -82,6 +81,7 @@ app.route("/gallery").get(async (req, res) => {
         const googleData = JSON.parse(body);
         reviews = googleData.result.reviews;
         photoReferences = googleData.result.photos;
+        res.set("Cache-Control", "public, max-age=300, s-maxage=600");
         res.render("gallery", {imagesList: photoReferences, lodash: _});
     });
     await fs.readdir("public/images/gallery", (err, files) => {
@@ -96,11 +96,13 @@ app.route("/gallery").get(async (req, res) => {
 
 // ABOUT ROUTE
 app.route("/about").get((req, res) => {
+    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
     res.render("about");
 });
 
 // PAY ROUTE
 app.route("/pay").get((req, res) => {
+    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
     res.render("pay");
 });
 
@@ -108,6 +110,7 @@ app.route("/pay").get((req, res) => {
 app
     .route("/contact")
     .get((req, res) => {
+        res.set("Cache-Control", "public, max-age=300, s-maxage=600");
         res.render("contact");
     })
     .post((req, res) => {
@@ -129,10 +132,22 @@ app
                     to: receiver,
                 })
                 .then((message) => {
-                    let messageLog = new MessageLog({
-                        message: message,
-                    });
-                    messageLog.save();
+                    db.collection("messages")
+                        .add({
+                            firstName: formData["firstName"],
+                            lastName: formData["lastName"],
+                            phoneNumber: formData["phoneNumber"],
+                            fromCity: formData["fromCity"],
+                            fromState: formData["fromState"],
+                            toCity: formData["toCity"],
+                            toState: formData["toState"],
+                            date: formData["date"],
+                            message: formData["message"],
+                        })
+                        .then(() => {
+                            console.log("Message added to database");
+                        });
+                    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
                     res.render("contact");
                 });
         }
