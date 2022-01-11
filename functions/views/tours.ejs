@@ -17,12 +17,12 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
     >
       <% toursData.forEach((tour, index) => { %>
       <div class="accordion-item">
-        <h2 class="accordion-header" id="flush-header-<%- tour._id %>">
+        <h2 class="accordion-header" id="flush-header-<%- tour.id %>">
           <button
             class="accordion-button collapsed"
             type="button"
             data-bs-toggle="collapse"
-            data-bs-target="#flush-<%- tour._id %>"
+            data-bs-target="#flush-<%- tour.id %>"
             aria-expanded="false"
             aria-controls="flush-collapseOne"
           >
@@ -30,9 +30,9 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
           </button>
         </h2>
         <div
-          id="flush-<%- tour._id %>"
+          id="flush-<%- tour.id %>"
           class="accordion-collapse collapse"
-          aria-labelledby="flush-header-<%- tour._id %>"
+          aria-labelledby="flush-header-<%- tour.id %>"
           data-bs-parent="#accordionFlushExample"
         >
           <div class="accordion-body">

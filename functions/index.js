@@ -4,6 +4,7 @@ const functions = require("firebase-functions");
 const firebase = require("firebase-admin");
 
 const firebaseApp = firebase.initializeApp(functions.config().firebase);
+const db = firebaseApp.firestore();
 
 const _ = require("lodash");
 const fs = require("fs");
@@ -27,138 +28,130 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(logger("tiny"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
-
-mongoURI = `mongodb+srv://dbAdmin:${process.env.MONGODB_ADMIN_KEY}@cluster0.rhtnn.mongodb.net/website?retryWrites=true&w=majority`;
-mongoLocalURI = `mongodb://localhost:27017/hari-brothers-bus-service`;
-mongoose.connect(mongoLocalURI, (err) => {
-  if (err) {
-    console.log(err);
-  }
-});
-
-const testimonialSchema = new mongoose.Schema({
-  author: String,
-  text: String,
-});
-
-const toursSchema = new mongoose.Schema({
-  tourName: String,
-  tourPlaces: [],
-});
-
-const messageLogSchema = new mongoose.Schema({
-  message: Object,
-});
-
-const Testimonials = new mongoose.model("Testimonials", testimonialSchema);
-const Tours = new mongoose.model("Tours", toursSchema);
-const MessageLog = new mongoose.model("Message Log", messageLogSchema);
 
 // HOME ROUTE
 app.route("/").get((req, res) => {
-  Testimonials.find({}, (err, message) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("home", { testimonials: message });
-    }
-  });
+    // Fetching testimonials from database
+    db.collection("testimonials")
+        .get()
+        .then((snapshot) => {
+            if (snapshot.empty) {
+                console.log("No testimonials found");
+            } else {
+                let testimonials = [];
+                snapshot.forEach((doc) => {
+                    testimonials.push(doc.data());
+                });
+                res.render("home", {
+                    testimonials: testimonials,
+                });
+            }
+        })
 });
 
 // TOUR ROUTE
 app.route("/tours").get((req, res) => {
-  Tours.find({}, (err, tour) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("tours", { toursData: tour });
-    }
-  });
+    // Fetching tours from database
+    db.collection("tours")
+        .get()
+        .then((snapshot) => {
+            if (snapshot.empty) {
+                console.log("No tours found");
+            } else {
+                let tours = [];
+                snapshot.forEach((doc) => {
+                    tours.push(doc.data());
+                });
+                res.render("tours", {
+                    toursData: tours,
+                });
+            }
+        })
 });
 
 // GALLERY ROUTE
 app.route("/gallery").get(async (req, res) => {
-  let images = [];
-  let reviews = [];
-  let photoReferences = [];
+    let images = [];
+    let reviews = [];
+    let photoReferences = [];
 
-  const googleDataUrl = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${process.env.GOOGLE_PLACE_ID}&key=${process.env.GOOGLE_API}`;
-  request(googleDataUrl, (error, response, body) => {
-    const googleData = JSON.parse(body);
-    reviews = googleData.result.reviews;
-    photoReferences = googleData.result.photos;
-    res.render("gallery", { imagesList: photoReferences, lodash: _ });
-  });
-  await fs.readdir("public/images/gallery", (err, files) => {
-    if (err) console.log(err);
-    else {
-      files.forEach((item) => {
-        images.push(item);
-      });
-    }
-  });
+    const googleDataUrl = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${process.env.GOOGLE_PLACE_ID}&key=${process.env.GOOGLE_API}`;
+    request(googleDataUrl, (error, response, body) => {
+        const googleData = JSON.parse(body);
+        reviews = googleData.result.reviews;
+        photoReferences = googleData.result.photos;
+        res.render("gallery", {imagesList: photoReferences, lodash: _});
+    });
+    await fs.readdir("public/images/gallery", (err, files) => {
+        if (err) console.log(err);
+        else {
+            files.forEach((item) => {
+                images.push(item);
+            });
+        }
+    });
 });
 
 // ABOUT ROUTE
 app.route("/about").get((req, res) => {
-  res.render("about");
+    res.render("about");
 });
 
 // PAY ROUTE
 app.route("/pay").get((req, res) => {
-  res.render("pay");
+    res.render("pay");
 });
 
 // CONTACT ROUTE
 app
-  .route("/contact")
-  .get((req, res) => {
-    res.render("contact");
-  })
-  .post((req, res) => {
-    if (req.body) {
-      const accountSid = process.env.TWILIO_ACCOUNT_SID;
-      const authToken = process.env.TWILIO_AUTH_TOKEN;
-      const client = require("twilio")(accountSid, authToken);
+    .route("/contact")
+    .get((req, res) => {
+        res.render("contact");
+    })
+    .post((req, res) => {
+        if (req.body) {
+            const accountSid = process.env.TWILIO_ACCOUNT_SID;
+            const authToken = process.env.TWILIO_AUTH_TOKEN;
+            const client = require("twilio")(accountSid, authToken);
 
-      let formData = req.body;
-      let sender = process.env.TWILIO_SENDER_NUMBER;
-      let receiver = process.env.TWILIO_RECEIVER_NUMBER;
+            let formData = req.body;
+            let sender = process.env.TWILIO_SENDER_NUMBER;
+            let receiver = process.env.TWILIO_RECEIVER_NUMBER;
 
-      let messageBody = `\n\nClient Message\n${formData["firstName"]} ${formData["lastName"]}\nPhone: ${formData["phoneNumber"]}\nFrom: ${formData["fromCity"]}, ${formData["fromState"]}\nTo: ${formData["toCity"]}, ${formData["toState"]}\nDate: ${formData["date"]}\nMessage:\n${formData["message"]}`;
+            let messageBody = `\n\nClient Message\n${formData["firstName"]} ${formData["lastName"]}\nPhone: ${formData["phoneNumber"]}\nFrom: ${formData["fromCity"]}, ${formData["fromState"]}\nTo: ${formData["toCity"]}, ${formData["toState"]}\nDate: ${formData["date"]}\nMessage:\n${formData["message"]}`;
 
-      client.messages
-        .create({
-          body: messageBody,
-          from: sender,
-          to: receiver,
-        })
-        .then((message) => {
-          let messageLog = new MessageLog({
-            message: message,
-          });
-          messageLog.save();
-          res.render("contact");
-        });
-    }
-  });
+            client.messages
+                .create({
+                    body: messageBody,
+                    from: sender,
+                    to: receiver,
+                })
+                .then((message) => {
+                    let messageLog = new MessageLog({
+                        message: message,
+                    });
+                    messageLog.save();
+                    res.render("contact");
+                });
+        }
+    });
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+    next(createError(404));
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+    // render the error page
+    res.status(err.status || 500);
+    res.render("error");
 });
 
 exports.app = functions.https.onRequest(app);
