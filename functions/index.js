@@ -82,7 +82,7 @@ app.route("/gallery").get(async (req, res) => {
     let reviews = [];
     let photoReferences = [];
 
-    const googleDataUrl = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${process.env.GOOGLE_PLACE_ID}&key=${process.env.GOOGLE_API}`;
+    const googleDataUrl = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${process.env.GOOGLE_PLACE_ID}&key=${process.env.GOOGLE_PLACES_API}`;
     request(googleDataUrl, (error, response, body) => {
         const googleData = JSON.parse(body);
         reviews = googleData.result.reviews;
