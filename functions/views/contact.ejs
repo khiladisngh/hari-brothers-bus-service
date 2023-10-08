@@ -211,29 +211,70 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
 </section>
 
 <script>
-  $(document).ready(function () {
-      // Load states from json file.
-      $.getJSON("/json/indianStates.json", function (data) {
-          $.each(data["states"], function (key, value) {
-              $("#inputFromState").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
-              $("#inputToState").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
-          });
-      });
-      // Load cities from json file based on selected state.
-      $(document).on("change", "#inputFromState", () => {
-          $("#inputFromCity").empty().append("<option selected>Select City</option>");
-          $.getJSON("/json/indianStates.json", function (data) {
-              $.each(data["states"], function (key, value) {
-                  if (value["name"] === $("#inputFromState").val()) {
-                      $.each(value["districts"], function (key, value) {
-                          $("#inputFromCity").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
-                          $("#inputToCity").append("<option value='" + value["name"] + "'>" + value["name"] + "</option>");
-                      });
-                  }
-              });
-          });
-      });
-  });
+    $(document).ready(function () {
+        // Load states from json file.
+        $.getJSON("/json/indianStates.json")
+            .done(function (data) {
+                $.each(data["states"], function (key, value) {
+                    $("#inputFromState").append(
+                        "<option value='" + value["name"] + "'>" + value["name"] + "</option>"
+                    );
+                    $("#inputToState").append(
+                        "<option value='" + value["name"] + "'>" + value["name"] + "</option>"
+                    );
+                });
+            })
+            .fail(function (jqxhr, textStatus, error) {
+                const err = textStatus + ", " + error;
+                console.log("Request Failed: " + err);
+            });
+
+        // Load cities from json file based on selected state for "From" dropdown
+        $(document).on("change", "#inputFromState", function () {
+            const selectedState = $("#inputFromState").val();
+            if (selectedState === "") {
+                $("#inputFromCity").empty().append("<option selected>Select City</option>");
+                return;
+            }
+            $("#inputFromCity").empty().append("<option selected>Loading...</option>");
+            populateCities(selectedState, "#inputFromCity");
+        });
+
+        // Load cities from json file based on selected state for "To" dropdown
+        $(document).on("change", "#inputToState", function () {
+            const selectedState = $("#inputToState").val();
+            if (selectedState === "") {
+                $("#inputToCity").empty().append("<option selected>Select City</option>");
+                return;
+            }
+            $("#inputToCity").empty().append("<option selected>Loading...</option>");
+            populateCities(selectedState, "#inputToCity");
+        });
+
+        function populateCities(selectedState, cityDropdownId) {
+            $.getJSON("/json/indianStates.json")
+                .done(function (data) {
+                    const states = data.states;
+                    const selectedStateObj = states.find(function (state) {
+                        return state.name === selectedState;
+                    });
+                    if (selectedStateObj) {
+                        $(cityDropdownId).empty().append("<option selected>Select City</option>");
+                        selectedStateObj.districts.forEach(function (district) {
+                            const option = `<option value="${district.name}">${district.name}</option>`;
+                            $(cityDropdownId).append(option);
+                        });
+                    } else {
+                        $(cityDropdownId).empty().append("<option selected>Select City</option>");
+                    }
+                })
+                .fail(function (jqxhr, textStatus, error) {
+                    const err = textStatus + ", " + error;
+                    console.log("Request Failed: " + err);
+                    $(cityDropdownId).empty().append("<option selected>Error Loading Cities</option>");
+                });
+        }
+    });
 </script>
 
 <script type="text/javascript">
