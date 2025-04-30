@@ -4,9 +4,11 @@
     "rewrites": [
       {
         "source": "**",
-        "function": "app"
+        "function": "app",
+        "region": "asia-south1"
       }
-    ]
+    ],
+    "region": "asia-south1"
   },
   "functions": {
     "source": "functions"
@@ -20,6 +22,10 @@
     },
     "ui": {
       "enabled": true
-    }
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "singleProjectMode": true
   }
 }

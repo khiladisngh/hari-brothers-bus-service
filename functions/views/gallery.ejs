@@ -15,32 +15,36 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
 
     <div class="gallery">
       <div class="row d-flex justify-content-center">
-        <% imagesList.forEach((image, index) => { %>
-        <div
-          class="
-            col-sm-<%=
-            lodash.sample([6])
-            %>
-            col-xl-<%=
-            lodash.sample([6])
-            %>
-            p-2
-          "
-        >
-          <a
-            class="lightbox"
-            href="https://maps.googleapis.com/maps/api/place/photo?maxheight=500&photoreference=<%= image.photo_reference %>&key=<%= process.env.GOOGLE_PLACES_API %>"
+        <% if (typeof localImages !== 'undefined' && localImages.length > 0) { %>
+          <% localImages.forEach((imagePath, index) => { %>
+          <div
+            class="
+              col-sm-<%=
+              lodash.sample([6])
+              %>
+              col-xl-<%=
+              lodash.sample([6])
+              %>
+              p-2
+            "
           >
-            <img
-              src="https://maps.googleapis.com/maps/api/place/photo?maxheight=1000&photoreference=<%= image.photo_reference %>&key=<%= process.env.GOOGLE_PLACES_API %>"
-              class="shadow-1-strong mb-4"
-              alt="google-image"
-              data-aos="slide-left"
-              loading="lazy"
-            />
-          </a>
-        </div>
-        <% }) %>
+            <a
+              class="lightbox"
+              href="<%= imagePath %>" <%# Use the local image path for the lightbox %>
+            >
+              <img
+                src="<%= imagePath %>" <%# Use the local image path for the image source %>
+                class="shadow-1-strong mb-4"
+                alt="Gallery image <%= index + 1 %>"
+                data-aos="slide-left"
+                loading="lazy"
+              />
+            </a>
+          </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-center">No images found in the gallery.</p>
+        <% } %>
       </div>
     </div>
   </div>
@@ -49,7 +53,10 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.js"></script>
 
 <script>
-  baguetteBox.run(".gallery");
+  // Initialize baguetteBox only if there are images
+  if (document.querySelectorAll('.gallery .lightbox').length > 0) {
+    baguetteBox.run(".gallery");
+  }
 </script>
 
 <%- include("partials/footer") -%> <%- include("partials/foot") -%>

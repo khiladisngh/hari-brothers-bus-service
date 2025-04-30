@@ -1,10 +1,14 @@
 // For local development using a .env file
 require("dotenv").config();
 
-const functions = require("firebase-functions");
+// --- Gen 2 Imports ---
+// Import specific function type and logger from v2 modules
+const { onRequest } = require("firebase-functions/v2/https");
+const logger = require("firebase-functions/logger");
+
+// --- Other Imports ---
 const admin = require("firebase-admin");
 const { getFirestore } = require("firebase-admin/firestore");
-const logger = require("firebase-functions/logger"); // Use structured logging
 const express = require("express");
 const path = require("path");
 const engines = require("consolidate");
@@ -31,11 +35,9 @@ const db = getFirestore();
 
 // --- Environment Variable Checks ---
 const requiredEnvVars = [
-    'GOOGLE_PLACE_ID',
-    'GOOGLE_PLACES_API',
-    'EMAIL_USER',          // Your Gmail address used for sending
-    'EMAIL_PASSWORD',      // Your 16-character Gmail App Password
-    'CONTACT_FORM_RECIPIENT' // The email address to send contact notifications TO
+    'EMAIL_USER',               // Your Gmail address used for sending
+    'EMAIL_PASSWORD',           // Your 16-character Gmail App Password
+    'CONTACT_FORM_RECIPIENT'    // The email address to send contact notifications TO
 ];
 
 let missingEnvVars = false;
@@ -48,26 +50,22 @@ requiredEnvVars.forEach(varName => {
 
 if (missingEnvVars) {
     logger.error("One or more required environment variables are missing. Functionality may be impaired.");
-    // Consider preventing startup or disabling features dependent on missing vars
 }
 
 // --- Nodemailer Transporter Setup ---
-// Create the transporter outside of the route handlers for efficiency
 let transporter;
 const emailUser = process.env.EMAIL_USER;
-const emailPass = process.env.EMAIL_PASSWORD; // This should be the App Password
+const emailPass = process.env.EMAIL_PASSWORD;
 
 if (emailUser && emailPass) {
     transporter = nodemailer.createTransport({
-        service: 'gmail', // Use Gmail service
+        service: 'gmail',
         auth: {
             user: emailUser,
-            pass: emailPass, // Use the App Password here
+            pass: emailPass,
         },
     });
     logger.info("Nodemailer transporter created successfully for Gmail.");
-
-    // Optional: Verify transporter connection (logs error if fails)
     transporter.verify(function(error, success) {
        if (error) {
             logger.error("Nodemailer transporter verification failed:", error);
@@ -75,14 +73,12 @@ if (emailUser && emailPass) {
             logger.info("Nodemailer transporter is ready to send messages.");
        }
     });
-
 } else {
     logger.error("Email credentials (EMAIL_USER, EMAIL_PASSWORD) missing. Email sending will be disabled.");
-    // transporter remains undefined, handle this in routes needing email
 }
 
-
 // --- Express App Setup ---
+// This part remains exactly the same
 const app = express();
 app.engine("html", engines.ejs);
 app.set("views", path.join(__dirname, "views"));
@@ -98,6 +94,7 @@ const setCacheHeaders = (res) => {
 };
 
 // --- Routes ---
+// All your app.get() and app.post() routes remain exactly the same
 
 // HOME ROUTE
 app.get("/", async (req, res, next) => {
@@ -109,7 +106,7 @@ app.get("/", async (req, res, next) => {
             logger.warn("No testimonials found in Firestore.");
         } else {
             testimonials = snapshot.docs.map(doc => doc.data());
-            logger.info(`Workspaceed ${testimonials.length} testimonials.`); // Fixed typo
+            logger.info(`Workspaceed ${testimonials.length} testimonials.`); // Fixed typo from previous version if present
         }
         setCacheHeaders(res);
         res.render("home", { testimonials: testimonials });
@@ -142,34 +139,23 @@ app.get("/tours", async (req, res, next) => {
 // GALLERY ROUTE
 app.get("/gallery", async (req, res, next) => {
     logger.info("Accessing Gallery route");
-    let googlePhotos = [];
-    const googlePlaceId = process.env.GOOGLE_PLACE_ID;
-    const googleApiKey = process.env.GOOGLE_PLACES_API;
-
-    if (!googlePlaceId || !googleApiKey) {
-        logger.error("Google Place ID or API Key missing in environment variables.");
-    }
-    const googleDataUrl = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${googlePlaceId}&key=${googleApiKey}&fields=photos,reviews`;
-
     try {
-        const googleResponse = await axios.get(googleDataUrl);
-        if (googleResponse.status === 200 && googleResponse.data && googleResponse.data.result) {
-            googlePhotos = googleResponse.data.result.photos || [];
-            logger.info(`Workspaceed ${googlePhotos.length} photo references from Google Places API.`); // Fixed typo
-        } else {
-            logger.warn("Failed to fetch or parse data from Google Places API.", { status: googleResponse.status, data: googleResponse.data });
-        }
+        const imageFolderPath = path.join('public', 'images', 'gallery-page');
+        const files = await fs.readdir(imageFolderPath);
+        // Filter for image files (e.g., jpg, png, jpeg) and create relative paths
+        const imageFiles = files
+            .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file))
+            .map(file => `/images/gallery-page/${file}`); // Create paths relative to the public folder
+
+        logger.info(`Found ${imageFiles.length} images locally.`);
         setCacheHeaders(res);
         res.render("gallery", {
-            googlePhotos: googlePhotos,
-            lodash: _
+            localImages: imageFiles, // Pass the list of local image paths
+            lodash: _ // Keep lodash if the template still uses it for other things
         });
     } catch (error) {
-        logger.error("Error in Gallery route:", error);
-        if (axios.isAxiosError(error)) {
-            logger.error("Axios error details:", { message: error.message, response: error.response?.data });
-        }
-        next(error);
+        logger.error("Error reading gallery images from local directory:", error);
+        next(error); // Pass the error to the error handler
     }
 });
 
@@ -202,11 +188,10 @@ app.post("/contact", async (req, res, next) => {
         logger.warn("Contact form submitted with empty body.");
         return next(createError(400, "Bad Request: No form data received."));
     }
-
     const formData = req.body;
 
-    // Basic validation
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber || !formData.message) { // Added email validation
+    // Basic validation - Ensure your form actually has an 'email' field
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber || !formData.message) {
         logger.warn("Contact form submission missing required fields.", { received: formData });
         setCacheHeaders(res);
         return res.status(400).render("contact", {
@@ -215,84 +200,66 @@ app.post("/contact", async (req, res, next) => {
         });
     }
 
-    // --- Email Sending Logic ---
-    const emailRecipient = process.env.CONTACT_FORM_RECIPIENT; // Get recipient from env
-
-    // Check if transporter was successfully created and recipient is set
+    // Email Sending Logic
+    const emailRecipient = process.env.CONTACT_FORM_RECIPIENT;
     if (!transporter) {
          logger.error("Nodemailer transporter not available. Cannot send email.");
-         // Decide how to handle: maybe still save to DB but show an error?
-         // For now, we'll proceed to save to DB but skip email.
-         // Alternatively, return an error:
-         // return next(createError(500, "Server configuration error preventing email sending."));
     }
     if (!emailRecipient) {
          logger.error("CONTACT_FORM_RECIPIENT environment variable not set. Cannot send email notification.");
-         // Again, decide how to handle. Proceeding without email for now.
-         // Alternatively, return an error:
-         // return next(createError(500, "Server configuration error: Email recipient not set."));
     }
 
-    // Construct email content
     const mailSubject = `New Contact Form Submission from ${formData.firstName} ${formData.lastName}`;
     const mailTextBody = `
-        New contact form submission received:
-
+        New contact form submission received:\n
         Name: ${formData.firstName} ${formData.lastName}
-        Email: ${formData.email} // Added email
+        Email: ${formData.email}
         Phone: ${formData.phoneNumber}
         From: ${formData.fromCity || 'N/A'}, ${formData.fromState || 'N/A'}
         To: ${formData.toCity || 'N/A'}, ${formData.toState || 'N/A'}
-        Date: ${formData.date || 'N/A'}
-
-        Message:
-        ${formData.message}
+        Date: ${formData.date || 'N/A'}\n
+        Message:\n${formData.message}
     `;
     const mailHtmlBody = `
         <h2>New Contact Form Submission</h2>
         <p><strong>Name:</strong> ${formData.firstName} ${formData.lastName}</p>
-        <p><strong>Email:</strong> ${formData.email}</p> // Added email
+        <p><strong>Email:</strong> ${formData.email}</p>
         <p><strong>Phone:</strong> ${formData.phoneNumber}</p>
         <p><strong>From:</strong> ${formData.fromCity || 'N/A'}, ${formData.fromState || 'N/A'}</p>
         <p><strong>To:</strong> ${formData.toCity || 'N/A'}, ${formData.toState || 'N/A'}</p>
         <p><strong>Date:</strong> ${formData.date || 'N/A'}</p>
         <hr>
         <p><strong>Message:</strong></p>
-        <p>${formData.message.replace(/\n/g, '<br>')}</p> `; // Added basic newline handling for HTML
-
+        <p>${formData.message.replace(/\n/g, '<br>')}</p>
+    `;
     const mailOptions = {
-        from: `"Hari Bus Service Website" <${emailUser}>`, // Use the authenticated user as sender
-        to: emailRecipient, // Send the notification email TO this address
+        from: `"Hari Bus Service Website" <${emailUser}>`,
+        to: emailRecipient,
         replyTo: formData.email, // Set reply-to to the user's email
         subject: mailSubject,
         text: mailTextBody,
         html: mailHtmlBody,
     };
 
-    let emailInfo = null; // To store email sending result
-
-    // Attempt to send email only if transporter and recipient are available
+    let emailInfo = null;
     if (transporter && emailRecipient) {
         try {
             emailInfo = await transporter.sendMail(mailOptions);
             logger.info(`Email sent successfully. Message ID: ${emailInfo.messageId}`);
         } catch (emailError) {
             logger.error("Error sending contact form email:", emailError);
-            // Decide if this should prevent saving to Firestore or stop the request
-            // For now, log the error and continue to save to Firestore
-            // You might want to return an error to the user instead:
-            // return next(createError(500, "Failed to send message notification. Please try again later."));
+            // Continue to save to Firestore even if email fails for now
         }
     } else {
          logger.warn("Skipping email notification due to missing configuration (transporter or recipient).");
     }
 
-    // --- Save to Firestore ---
+    // Save to Firestore
     try {
         const docRef = await db.collection("messages").add({
             firstName: formData.firstName,
             lastName: formData.lastName,
-            email: formData.email, // Added email
+            email: formData.email, // Ensure email field exists in Firestore schema if needed
             phoneNumber: formData.phoneNumber,
             fromCity: formData.fromCity || null,
             fromState: formData.fromState || null,
@@ -300,22 +267,19 @@ app.post("/contact", async (req, res, next) => {
             toState: formData.toState || null,
             date: formData.date || null,
             message: formData.message,
-            emailMessageId: emailInfo ? emailInfo.messageId : null, // Store Email Message ID if sent
+            emailMessageId: emailInfo ? emailInfo.messageId : null,
             submittedAt: new Date()
         });
         logger.info(`Message saved to Firestore with ID: ${docRef.id}`);
-
-        // Redirect only if Firestore save was successful
         res.redirect('/contact?success=true');
-
     } catch (firestoreError) {
         logger.error("Error saving contact form data to Firestore:", firestoreError);
-        // This is a more critical error, pass it to the main error handler
         next(createError(500, "Failed to save message data. Please try again later."));
     }
 });
 
 // --- Error Handling ---
+// This remains the same
 app.use((req, res, next) => {
     next(createError(404));
 });
@@ -336,5 +300,16 @@ app.use((err, req, res, next) => {
     res.render("error");
 });
 
-// --- Export Firebase Function ---
-exports.app = functions.https.onRequest(app);
+// --- Export Firebase Function (Gen 2 Syntax) ---
+
+// Define options for the function (region, memory, etc.)
+// Adjust the region to your preferred one, e.g., 'asia-south1' for Mumbai
+const functionOptions = {
+    region: "asia-south1", // Example: Set region to Mumbai
+    // memory: "512MB", // Example: Set memory (optional)
+    // You can add other options here: timeoutSeconds, secrets, etc.
+    // secrets: ["EMAIL_PASSWORD"], // Example for using Secret Manager
+};
+
+// Export the Express app as a Gen 2 onRequest function
+exports.app = onRequest(functionOptions, app);
