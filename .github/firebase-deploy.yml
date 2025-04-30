@@ -1,0 +1,50 @@
+# .github/workflows/firebase-deploy.yml
+name: Deploy to Firebase Production
+
+on:
+  push:
+    branches:
+      - main # Trigger deployment when commits are pushed to the main branch
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+
+# Ensure only one production deploy runs at a time
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: hari-bus-service-8d1fa # Your Firebase Project ID
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Root Dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Functions Dependencies
+        run: cd functions && npm ci --ignore-scripts && cd ..
+
+      # --- Optional Steps (Uncomment and adapt if you have them) ---
+      # - name: Lint Check
+      #   run: npm run lint
+      # - name: Run Tests
+      #   run: npm test
+
+      - name: Setup Firebase Tools
+        uses: firebase-tools/setup-firebase@v1
+
+      - name: Deploy to Firebase (Hosting & Functions)
+        run: |
+          firebase deploy --only functions,hosting --project=${{ env.PROJECT_ID }} --force --non-interactive --token "${{ secrets.FIREBASE_TOKEN }}"
+        # --force is often needed in CI environments
+        # --only functions,hosting deploys both specified services

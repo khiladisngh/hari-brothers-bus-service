@@ -1,0 +1,64 @@
+# .github/workflows/firebase-preview.yml
+name: Deploy to Firebase Hosting Preview Channel
+
+on:
+  pull_request:
+    # Optionally specify branches if needed, e.g., branches: [main]
+    # Runs on pushes/updates to Pull Requests targeting the main branch(es)
+
+# Ensure only one preview deploy runs at a time per PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_preview:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }} # Only run on PRs from the same repo (security)
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: hari-bus-service-8d1fa # Your Firebase Project ID
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # Cache dependencies based on package-lock.json
+
+      - name: Install Root Dependencies
+        run: npm ci --ignore-scripts # Use ci for faster, reliable installs; ignore scripts for security
+
+      - name: Install Functions Dependencies
+        run: cd functions && npm ci --ignore-scripts && cd ..
+
+      # --- Optional Steps (Uncomment and adapt if you have them) ---
+      # - name: Lint Check
+      #   run: npm run lint # Assuming you have a lint script in root package.json
+      # - name: Run Tests
+      #   run: npm test # Assuming you have a test script
+
+      - name: Setup Firebase Tools
+        uses: firebase-tools/setup-firebase@v1 # Installs Firebase CLI
+
+      - name: Deploy to Firebase Hosting Preview Channel
+        id: deploy_preview # Give the step an ID to access its output
+        run: |
+          firebase hosting:channel:deploy --project=${{ env.PROJECT_ID }} --expires 7d --non-interactive --token "${{ secrets.FIREBASE_TOKEN }}"
+        # --expires 7d automatically deletes preview after 7 days
+        # --non-interactive prevents prompts
+        # Note: No --only flag, deploys only hosting by default for channel:deploy
+
+      # Optional: Comment preview URL on the PR
+      - name: Add Preview URL Comment to PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: always() # Run even if previous steps fail (to report failure/URL)
+        with:
+          header: firebase-preview-deploy # Unique header for the comment
+          message: |
+            Firebase Hosting Preview Deploy Results:
+            * **Status:** ${{ job.status }}
+            * **Preview URL:** ${{ steps.deploy_preview.outputs.details_url }}
+            * Expires: 7 days
