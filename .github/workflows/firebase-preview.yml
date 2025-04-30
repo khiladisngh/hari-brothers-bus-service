@@ -1,7 +1,7 @@
 # .github/workflows/firebase-preview.yml
 name: Deploy to Firebase Hosting Preview Channel
 
-'on':
+on:
   pull_request:
     # Optionally specify branches if needed, e.g., branches: [main]
     # Runs on pushes/updates to Pull Requests targeting the main branch(es)

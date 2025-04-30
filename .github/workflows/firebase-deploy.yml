@@ -1,7 +1,7 @@
 # .github/workflows/firebase-deploy.yml
 name: Deploy to Firebase Production
 
-'on':
+on:
   push:
     branches:
       - main # Trigger deployment when commits are pushed to the main branch
