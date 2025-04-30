@@ -1,60 +1,62 @@
-<%- include('partials/header', {title: 'Tours'}) -%> <%-
-include('partials/navbar') -%> <%- include("partials/toast") -%>
+<%# functions/views/tours.ejs %>
 
-<!--TOURS SECTION-->
+<%- include('partials/header', {title: 'Tours'}) -%>
+<%- include('partials/navbar') -%>
+<%- include("partials/toast") -%>
 
-<link rel="stylesheet" href="./stylesheets/tours.css" />
+<link rel="stylesheet" href="/stylesheets/tours.css" />
 
 <section id="tours-section">
   <div class="container-xxl flex-wrap flex-md-nowrap">
     <h2 class="p-5" data-aos="fade-left">
       Most popular tours booked by our customers
     </h2>
-    <div
-      class="accordion accordion-flush shadow-dp-12"
-      data-aos="fade-right"
-      id="accordionFlushExample"
-    >
+    <div class="accordion accordion-flush shadow-dp-12" data-aos="fade-right" id="accordionFlushExample">
+
+      <%# Outer loop for tours %>
       <% toursData.forEach((tour, index) => { %>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="flush-header-<%- tour.id %>">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#flush-<%- tour.id %>"
-            aria-expanded="false"
-            aria-controls="flush-collapseOne"
-          >
-            <h5><%- tour.tourName %></h5>
-          </button>
-        </h2>
-        <div
-          id="flush-<%- tour.id %>"
-          class="accordion-collapse collapse"
-          aria-labelledby="flush-header-<%- tour.id %>"
-          data-bs-parent="#accordionFlushExample"
-        >
-          <div class="accordion-body">
-            <div class="row">
-              <% tour.tourPlaces.forEach((place, index) => { %>
-              <div class="col-sm-12 col-md-6 col-lg-4">
-                <img
-                  src="images/tours/<%= place %>.jpg"
-                  alt="<% place %>"
-                  class="my-2 w-100 w-sm-auto"
-                  loading="lazy"
-                />
-                <p class="tour-places h5"><%- place %></p>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-header-<%- tour.id || index %>"> <%# Use tour.id or index %>
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-<%- tour.id || index %>" aria-expanded="false" aria-controls="flush-collapseOne">
+              <h5><%- tour.tourName %></h5>
+            </button>
+          </h2>
+          <div id="flush-<%- tour.id || index %>" class="accordion-collapse collapse" aria-labelledby="flush-header-<%- tour.id || index %>" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              <div class="row">
+
+                <%# Inner loop for tour places (now objects) %>
+                <% if (tour.tourPlaces && tour.tourPlaces.length > 0) { %>
+                  <% tour.tourPlaces.forEach((place, placeIndex) => { %>
+                    <div class="col-sm-12 col-md-6 col-lg-4">
+                      <%# Check if imageUrl exists before showing img tag %>
+                      <% if (place.imageUrl) { %>
+                        <img
+                          src="<%= place.imageUrl %>"  <%# Use imageUrl from Firestore data %>
+                          alt="<%= place.altText || place.name %>" <%# Use altText or name %>
+                          class="my-2 w-100 w-sm-auto"
+                          loading="lazy"
+                        />
+                      <% } else { %>
+                        <%# Optional: Placeholder if image URL is missing %>
+                        <div class="my-2 w-100 w-sm-auto" style="height: 300px; background-color: #e0e0e0; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #757575;">No Image Available</div>
+                      <% } %>
+                      <p class="tour-places h5"><%- place.name %></p> <%# Use place name %>
+                    </div>
+                  <% }) %>
+                <% } else { %>
+                  <p>No specific places listed for this tour.</p>
+                <% } %>
+
               </div>
-              <% }) %>
             </div>
           </div>
         </div>
-      </div>
       <% }) %>
+
     </div>
   </div>
 </section>
 
-<%- include("partials/footer") -%> <%- include("partials/foot") -%>
+<%- include("partials/footer") -%>
+<%- include("partials/foot") -%>

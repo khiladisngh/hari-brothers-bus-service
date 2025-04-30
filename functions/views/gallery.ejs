@@ -1,62 +1,50 @@
-<%- include('partials/header', {title: 'Gallery'}) -%> <%-
-include('partials/navbar') -%> <%- include("partials/toast") -%>
+<%# functions/views/gallery.ejs %>
 
-<!--GALLERY SECTION-->
+<%- include('partials/header', {title: 'Gallery'}) -%>
+<%- include('partials/navbar') -%>
+<%- include("partials/toast") -%>
 
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.css"
-/>
-<link rel="stylesheet" href="./stylesheets/gallery.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.css" />
+<link rel="stylesheet" href="/stylesheets/gallery.css" />
 
 <section id="gallery-section">
   <div class="container-xxl flex-wrap flex-md-nowrap">
     <h1 class="p-3 p-lg-5" data-aos="fade-in">Gallery</h1>
-
     <div class="gallery">
       <div class="row d-flex justify-content-center">
-        <% if (typeof localImages !== 'undefined' && localImages.length > 0) { %>
-          <% localImages.forEach((imagePath, index) => { %>
-          <div
-            class="
-              col-sm-<%=
-              lodash.sample([6])
-              %>
-              col-xl-<%=
-              lodash.sample([6])
-              %>
-              p-2
-            "
-          >
-            <a
-              class="lightbox"
-              href="<%= imagePath %>" <%# Use the local image path for the lightbox %>
-            >
-              <img
-                src="<%= imagePath %>" <%# Use the local image path for the image source %>
-                class="shadow-1-strong mb-4"
-                alt="Gallery image <%= index + 1 %>"
-                data-aos="slide-left"
-                loading="lazy"
-              />
-            </a>
-          </div>
+
+        <%# Check if galleryItems array exists and has items %>
+        <% if (typeof galleryItems !== 'undefined' && galleryItems.length > 0) { %>
+          <% galleryItems.forEach((item, index) => { %>
+            <%# Use static Bootstrap columns instead of lodash %>
+            <div class="col-12 col-sm-6 col-md-4 p-2">
+              <a class="lightbox" href="<%= item.imageUrl %>"> <%# Use imageUrl from Firestore data %>
+                <img
+                  src="<%= item.imageUrl %>" <%# Use imageUrl from Firestore data %>
+                  class="shadow-1-strong mb-4"
+                  alt="<%= item.altText || 'Gallery Image' %>" <%# Use altText from Firestore data %>
+                  data-aos="slide-left"
+                  loading="lazy"
+                />
+              </a>
+            </div>
           <% }) %>
         <% } else { %>
-          <p class="text-center">No images found in the gallery.</p>
+          <%# Display message if no items were found %>
+          <p class="text-center">No images currently in the gallery.</p>
         <% } %>
+
       </div>
     </div>
   </div>
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.js"></script>
-
 <script>
-  // Initialize baguetteBox only if there are images
   if (document.querySelectorAll('.gallery .lightbox').length > 0) {
     baguetteBox.run(".gallery");
   }
 </script>
 
-<%- include("partials/footer") -%> <%- include("partials/foot") -%>
+<%- include("partials/footer") -%>
+<%- include("partials/foot") -%>

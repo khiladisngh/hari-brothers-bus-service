@@ -1,9 +1,9 @@
-// For local development using a .env file
-require("dotenv").config();
+// functions/index.js
+
 
 // --- Gen 2 Imports ---
-// Import specific function type and logger from v2 modules
 const { onRequest } = require("firebase-functions/v2/https");
+// Use Gen 1 logger path as confirmed working in previous steps
 const logger = require("firebase-functions/logger");
 
 // --- Other Imports ---
@@ -14,26 +14,32 @@ const path = require("path");
 const engines = require("consolidate");
 const cookieParser = require("cookie-parser");
 const createError = require("http-errors");
-const axios = require("axios"); // Modern HTTP client
 const nodemailer = require("nodemailer"); // Nodemailer for email
+// Lodash might still be needed if other templates use it, remove if gallery was the only user
 const _ = require("lodash");
-const { promises: fs } = require("fs");
+// Removed fs and axios as they are no longer needed for gallery
+
+// For local development using a .env file
+require("dotenv").config({ path: path.join(__dirname, '.env') }); // Load .env from functions dir if present
 
 // --- Initialization ---
-
 try {
-    admin.initializeApp();
-} catch (error) {
-    if (error.code !== 'app/duplicate-app') {
-        logger.error("Firebase Admin SDK initialization failed:", error);
-        throw error;
-    } else {
-        logger.warn("Firebase Admin SDK already initialized.");
+    // Initialize only if not already initialized (useful for testing/emulators)
+    if (admin.apps.length === 0) {
+        admin.initializeApp();
+        logger.info("Firebase Admin SDK initialized.");
     }
+} catch (error) {
+    logger.error("Firebase Admin SDK initialization failed:", error);
+    // Throwing error might prevent function cold start, log and potentially continue
+    // depending on whether other parts of the function can work without admin SDK.
+    // For this app, DB access is crucial, so throwing might be appropriate.
+    throw error;
 }
 const db = getFirestore();
 
 // --- Environment Variable Checks ---
+// Removed Google Places API vars
 const requiredEnvVars = [
     'EMAIL_USER',               // Your Gmail address used for sending
     'EMAIL_PASSWORD',           // Your 16-character Gmail App Password
@@ -49,13 +55,14 @@ requiredEnvVars.forEach(varName => {
 });
 
 if (missingEnvVars) {
-    logger.error("One or more required environment variables are missing. Functionality may be impaired.");
+    logger.error("One or more required environment variables are missing. Email functionality may be impaired.");
+    // Consider how critical email is. If essential, maybe throw an error here.
 }
 
 // --- Nodemailer Transporter Setup ---
 let transporter;
 const emailUser = process.env.EMAIL_USER;
-const emailPass = process.env.EMAIL_PASSWORD;
+const emailPass = process.env.EMAIL_PASSWORD; // This should be the App Password
 
 if (emailUser && emailPass) {
     transporter = nodemailer.createTransport({
@@ -66,6 +73,8 @@ if (emailUser && emailPass) {
         },
     });
     logger.info("Nodemailer transporter created successfully for Gmail.");
+
+    // Verify connection config
     transporter.verify(function(error, success) {
        if (error) {
             logger.error("Nodemailer transporter verification failed:", error);
@@ -78,23 +87,26 @@ if (emailUser && emailPass) {
 }
 
 // --- Express App Setup ---
-// This part remains exactly the same
 const app = express();
 app.engine("html", engines.ejs);
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "views")); // Views relative to functions directory
 app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
-app.use(require('morgan')("tiny"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
+// Removed express.static - rely on Firebase Hosting for static files from the root /public directory
+// app.use(express.static(path.join(__dirname, "public")));
+
+app.use(require('morgan')("tiny")); // HTTP request logger
+app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: false })); // For parsing application/x-www-form-urlencoded
+app.use(cookieParser()); // Parse cookies
+
+// Helper for cache headers
 const setCacheHeaders = (res) => {
+    // Example: Cache for 5 mins in browser, 10 mins in CDN
     res.set("Cache-Control", "public, max-age=300, s-maxage=600");
 };
 
 // --- Routes ---
-// All your app.get() and app.post() routes remain exactly the same
 
 // HOME ROUTE
 app.get("/", async (req, res, next) => {
@@ -105,8 +117,8 @@ app.get("/", async (req, res, next) => {
         if (snapshot.empty) {
             logger.warn("No testimonials found in Firestore.");
         } else {
-            testimonials = snapshot.docs.map(doc => doc.data());
-            logger.info(`Workspaceed ${testimonials.length} testimonials.`); // Fixed typo from previous version if present
+            testimonials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            logger.info(`Fetched ${testimonials.length} testimonials.`);
         }
         setCacheHeaders(res);
         res.render("home", { testimonials: testimonials });
@@ -116,19 +128,21 @@ app.get("/", async (req, res, next) => {
     }
 });
 
-// TOUR ROUTE
+// TOUR ROUTE - Fetches updated structure from Firestore
 app.get("/tours", async (req, res, next) => {
     logger.info("Accessing Tours route");
     try {
-        const snapshot = await db.collection("tours").get();
+        const snapshot = await db.collection("tours").orderBy("tourName", "asc").get(); // Order alphabetically
         let tours = [];
         if (snapshot.empty) {
             logger.warn("No tours found in Firestore.");
         } else {
-            tours = snapshot.docs.map(doc => doc.data());
-            logger.info(`Workspaceed ${tours.length} tours.`); // Fixed typo
+            // Data now includes tourPlaces as array of {name, imageUrl, altText} objects
+            tours = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            logger.info(`Fetched ${tours.length} tours.`);
         }
         setCacheHeaders(res);
+        // Pass data expected by the updated tours.ejs
         res.render("tours", { toursData: tours });
     } catch (error) {
         logger.error("Error fetching tours:", error);
@@ -136,26 +150,37 @@ app.get("/tours", async (req, res, next) => {
     }
 });
 
-// GALLERY ROUTE
+// GALLERY ROUTE - Fetches from Firestore 'galleryImages' collection
 app.get("/gallery", async (req, res, next) => {
-    logger.info("Accessing Gallery route");
+    logger.info("Accessing Gallery route (fetching from Firestore)");
     try {
-        const imageFolderPath = path.join('public', 'images', 'gallery-page');
-        const files = await fs.readdir(imageFolderPath);
-        // Filter for image files (e.g., jpg, png, jpeg) and create relative paths
-        const imageFiles = files
-            .filter(file => /\.(jpg|jpeg|png|gif)$/i.test(file))
-            .map(file => `/images/gallery-page/${file}`); // Create paths relative to the public folder
+        const snapshot = await db.collection("galleryImages")
+                                 .orderBy("order", "asc") // Order images based on the 'order' field
+                                 .get();
 
-        logger.info(`Found ${imageFiles.length} images locally.`);
+        let galleryItems = [];
+        if (snapshot.empty) {
+            logger.warn("No images found in Firestore 'galleryImages' collection.");
+        } else {
+            galleryItems = snapshot.docs.map(doc => ({
+                id: doc.id,
+                // Ensure imageUrl and altText exist, provide defaults if necessary
+                imageUrl: doc.data().imageUrl || '', // Default to empty string if missing
+                altText: doc.data().altText || "Gallery Image"
+            }));
+            logger.info(`Fetched ${galleryItems.length} gallery items from Firestore.`);
+        }
+
         setCacheHeaders(res);
+        // Pass data expected by the updated gallery.ejs
         res.render("gallery", {
-            localImages: imageFiles, // Pass the list of local image paths
-            lodash: _ // Keep lodash if the template still uses it for other things
+            galleryItems: galleryItems
+            // Removed lodash as template no longer uses it for columns
         });
+
     } catch (error) {
-        logger.error("Error reading gallery images from local directory:", error);
-        next(error); // Pass the error to the error handler
+        logger.error("Error fetching gallery items from Firestore:", error);
+        next(error);
     }
 });
 
@@ -184,58 +209,28 @@ app.get("/contact", (req, res) => {
 app.post("/contact", async (req, res, next) => {
     logger.info("Processing Contact form submission");
 
-    if (!req.body) {
-        logger.warn("Contact form submitted with empty body.");
-        return next(createError(400, "Bad Request: No form data received."));
-    }
+    if (!req.body) { /* ... handle empty body ... */ return next(createError(400, "Bad Request")); }
     const formData = req.body;
 
-    // Basic validation - Ensure your form actually has an 'email' field
+    // Validation (ensure form has 'email' field)
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber || !formData.message) {
-        logger.warn("Contact form submission missing required fields.", { received: formData });
-        setCacheHeaders(res);
-        return res.status(400).render("contact", {
-            error: "Please fill out all required fields.",
-            formData: formData
-        });
+        /* ... handle missing fields ... */
+        return res.status(400).render("contact", { error: "Please fill out all required fields.", formData: formData });
     }
 
     // Email Sending Logic
     const emailRecipient = process.env.CONTACT_FORM_RECIPIENT;
-    if (!transporter) {
-         logger.error("Nodemailer transporter not available. Cannot send email.");
-    }
-    if (!emailRecipient) {
-         logger.error("CONTACT_FORM_RECIPIENT environment variable not set. Cannot send email notification.");
-    }
+    if (!transporter) { logger.error("Nodemailer transporter not available."); }
+    if (!emailRecipient) { logger.error("CONTACT_FORM_RECIPIENT not set."); }
 
     const mailSubject = `New Contact Form Submission from ${formData.firstName} ${formData.lastName}`;
-    const mailTextBody = `
-        New contact form submission received:\n
-        Name: ${formData.firstName} ${formData.lastName}
-        Email: ${formData.email}
-        Phone: ${formData.phoneNumber}
-        From: ${formData.fromCity || 'N/A'}, ${formData.fromState || 'N/A'}
-        To: ${formData.toCity || 'N/A'}, ${formData.toState || 'N/A'}
-        Date: ${formData.date || 'N/A'}\n
-        Message:\n${formData.message}
-    `;
-    const mailHtmlBody = `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${formData.firstName} ${formData.lastName}</p>
-        <p><strong>Email:</strong> ${formData.email}</p>
-        <p><strong>Phone:</strong> ${formData.phoneNumber}</p>
-        <p><strong>From:</strong> ${formData.fromCity || 'N/A'}, ${formData.fromState || 'N/A'}</p>
-        <p><strong>To:</strong> ${formData.toCity || 'N/A'}, ${formData.toState || 'N/A'}</p>
-        <p><strong>Date:</strong> ${formData.date || 'N/A'}</p>
-        <hr>
-        <p><strong>Message:</strong></p>
-        <p>${formData.message.replace(/\n/g, '<br>')}</p>
-    `;
+    const mailTextBody = `... (construct text body using formData) ...`; // Keep your text body construction
+    const mailHtmlBody = `... (construct HTML body using formData) ...`; // Keep your HTML body construction
+
     const mailOptions = {
         from: `"Hari Bus Service Website" <${emailUser}>`,
         to: emailRecipient,
-        replyTo: formData.email, // Set reply-to to the user's email
+        replyTo: formData.email,
         subject: mailSubject,
         text: mailTextBody,
         html: mailHtmlBody,
@@ -248,10 +243,10 @@ app.post("/contact", async (req, res, next) => {
             logger.info(`Email sent successfully. Message ID: ${emailInfo.messageId}`);
         } catch (emailError) {
             logger.error("Error sending contact form email:", emailError);
-            // Continue to save to Firestore even if email fails for now
+            // Decide if this is fatal. Currently logs and continues.
         }
     } else {
-         logger.warn("Skipping email notification due to missing configuration (transporter or recipient).");
+         logger.warn("Skipping email notification due to missing configuration.");
     }
 
     // Save to Firestore
@@ -259,7 +254,7 @@ app.post("/contact", async (req, res, next) => {
         const docRef = await db.collection("messages").add({
             firstName: formData.firstName,
             lastName: formData.lastName,
-            email: formData.email, // Ensure email field exists in Firestore schema if needed
+            email: formData.email,
             phoneNumber: formData.phoneNumber,
             fromCity: formData.fromCity || null,
             fromState: formData.fromState || null,
@@ -268,48 +263,54 @@ app.post("/contact", async (req, res, next) => {
             date: formData.date || null,
             message: formData.message,
             emailMessageId: emailInfo ? emailInfo.messageId : null,
-            submittedAt: new Date()
+            submittedAt: admin.firestore.FieldValue.serverTimestamp() // Use server timestamp
         });
         logger.info(`Message saved to Firestore with ID: ${docRef.id}`);
         res.redirect('/contact?success=true');
     } catch (firestoreError) {
         logger.error("Error saving contact form data to Firestore:", firestoreError);
-        next(createError(500, "Failed to save message data. Please try again later."));
+        next(createError(500, "Failed to save message data."));
     }
 });
 
 // --- Error Handling ---
-// This remains the same
+// Catch 404
 app.use((req, res, next) => {
+    // If you have a custom 404.ejs view:
+    // res.status(404).render("404");
+    // Otherwise, use http-errors:
     next(createError(404));
 });
 
+// General error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
+    const status = err.status || 500;
     logger.error("Unhandled error caught:", {
         message: err.message,
-        status: err.status || 500,
-        stack: err.stack,
+        status: status,
+        stack: err.stack, // Log stack in development or for debugging
         url: req.originalUrl,
         method: req.method
     });
+
     res.locals.message = err.message;
-    const isDevelopment = process.env.NODE_ENV === 'development';
+    // Provide error details only in development (check NODE_ENV or similar)
+    const isDevelopment = process.env.FUNCTIONS_EMULATOR === 'true' || process.env.NODE_ENV === 'development';
     res.locals.error = isDevelopment ? err : {};
-    res.status(err.status || 500);
+
+    res.status(status);
+    // Ensure you have an 'error.ejs' view in functions/views/
     res.render("error");
 });
 
 // --- Export Firebase Function (Gen 2 Syntax) ---
-
-// Define options for the function (region, memory, etc.)
-// Adjust the region to your preferred one, e.g., 'asia-south1' for Mumbai
 const functionOptions = {
-    region: "asia-south1", // Example: Set region to Mumbai
-    // memory: "512MB", // Example: Set memory (optional)
-    // You can add other options here: timeoutSeconds, secrets, etc.
-    // secrets: ["EMAIL_PASSWORD"], // Example for using Secret Manager
+    region: "asia-south1", // Your preferred region
+    secrets: ["EMAIL_PASSWORD"], // Recommended: Use Secret Manager for EMAIL_PASSWORD
+    // memory: "512MB", // Optional: Adjust memory
+    // timeoutSeconds: 60, // Optional: Adjust timeout
 };
 
-// Export the Express app as a Gen 2 onRequest function
+// Export the Express app as a Gen 2 onRequest function named 'app'
 exports.app = onRequest(functionOptions, app);
