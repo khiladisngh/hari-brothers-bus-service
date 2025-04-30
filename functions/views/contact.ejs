@@ -102,7 +102,18 @@ include('partials/navbar') -%> <%- include("partials/toast") -%>
                         </div>
                         <div class="form-floating col-12">
                             <input
-                                    type="number"
+                                    type="email"
+                                    name="email"
+                                    class="form-control"
+                                    id="inputEmail"
+                                    placeholder="name@example.com"
+                                    required
+                            />
+                            <label for="inputEmail">Email Address</label>
+                        </div>
+                        <div class="form-floating col-12">
+                            <input
+                                    type="tel"
                                     name="phoneNumber"
                                     class="form-control"
                                     id="inputNumber"

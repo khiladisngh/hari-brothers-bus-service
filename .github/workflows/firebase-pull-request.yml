@@ -9,6 +9,16 @@ env:
   GOOGLE_PLACES_API: ${{ secrets.GOOGLE_PLACES_API }}
   GOOGLE_PLACE_ID: ${{ secrets.GOOGLE_PLACE_ID }}
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  # Add Email secrets if they are stored in GitHub Secrets
+  # EMAIL_USER: ${{ secrets.EMAIL_USER }}
+  # EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+  # EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  # Remove Twilio secrets if they were here
+  # TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  # TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  # TWILIO_SENDER_NUMBER: ${{ secrets.TWILIO_SENDER_NUMBER }}
+  # TWILIO_RECEIVER_NUMBER: ${{ secrets.TWILIO_RECEIVER_NUMBER }}
+
 
 jobs:
   build_and_deploy:
