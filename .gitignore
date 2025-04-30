@@ -123,5 +123,4 @@ tempCodeRunnerFile.js
 
 /node_modules
 /.firebase/*
-package-lock.json
 secrets/
