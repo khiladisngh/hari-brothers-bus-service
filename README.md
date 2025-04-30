@@ -1,6 +1,6 @@
 # Hari Brothers Bus Service Website
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/khiladisngh/hari-brothers-bus-service/firebase-deploy.yml?branch=main)](https://github.com/khiladisngh/hari-brothers-bus-service/actions/workflows/firebase-deploy.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/khiladisngh/hari-brothers-bus-service/firebase-deploy.yml?branch=master)](https://github.com/khiladisngh/hari-brothers-bus-service/actions/workflows/firebase-deploy.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange)](https://firebase.google.com/docs/hosting)
 [![Firebase Functions](https://img.shields.io/badge/Firebase-Functions_v2-orange)](https://firebase.google.com/docs/functions)
 [![Cloud Firestore](https://img.shields.io/badge/Cloud-Firestore-blue)](https://firebase.google.com/docs/firestore)
