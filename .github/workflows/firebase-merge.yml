@@ -11,10 +11,9 @@ env:
   GOOGLE_PLACES_API: ${{ secrets.GOOGLE_PLACES_API }}
   GOOGLE_PLACE_ID: ${{ secrets.GOOGLE_PLACE_ID }}
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-  # Add Email secrets if they are stored in GitHub Secrets
-  # EMAIL_USER: ${{ secrets.EMAIL_USER }}
-  # EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-  # EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  EMAIL_USER: ${{ secrets.EMAIL_USER }}
+  EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+  CONTACT_FORM_RECIPIENT: ${{ secrets.CONTACT_FORM_RECIPIENT }}
 
 jobs:
   build_and_deploy:
