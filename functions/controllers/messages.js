@@ -1,9 +1,11 @@
 // controllers/messages.js
-// Contact form messages controller with structured logging
+// Contact form messages controller with structured logging and circuit breaker
 
 const { getDb, getAdmin } = require('../config/firebase');
 const { getTransporter } = require('../config/nodemailer');
 const { log, logError, LogSeverity, PerformanceTimer } = require('../middleware/logger');
+const { emailCircuitBreaker } = require('../utils/circuitBreaker');
+const { withRetry } = require('../utils/retry');
 
 /**
  * Save contact form message to Firestore and send email
@@ -25,14 +27,19 @@ async function saveMessage(messageData, correlationId = null) {
         if (transporter && emailRecipient && emailUser) {
             try {
                 perfTimer.mark('email-start');
-                emailInfo = await transporter.sendMail({
-                    from: `"Hari Bus Service Website" <${emailUser}>`,
-                    to: emailRecipient,
-                    replyTo: email,
-                    subject: `New Contact Form Submission from ${firstName} ${lastName}`,
-                    text: `Name: ${firstName} ${lastName}\nEmail: ${email}\nPhone: ${phoneNumber}\n\nMessage:\n${message}`,
-                    html: `<p><strong>Name:</strong> ${firstName} ${lastName}</p><p><strong>Email:</strong> ${email}</p><p><strong>Phone:</strong> ${phoneNumber}</p><p><strong>Message:</strong></p><p>${message}</p>`
-                });
+                
+                // Use circuit breaker for email service
+                emailInfo = await emailCircuitBreaker.execute(async () => {
+                    return await transporter.sendMail({
+                        from: `"Hari Bus Service Website" <${emailUser}>`,
+                        to: emailRecipient,
+                        replyTo: email,
+                        subject: `New Contact Form Submission from ${firstName} ${lastName}`,
+                        text: `Name: ${firstName} ${lastName}\nEmail: ${email}\nPhone: ${phoneNumber}\n\nMessage:\n${message}`,
+                        html: `<p><strong>Name:</strong> ${firstName} ${lastName}</p><p><strong>Email:</strong> ${email}</p><p><strong>Phone:</strong> ${phoneNumber}</p><p><strong>Message:</strong></p><p>${message}</p>`
+                    });
+                }, correlationId);
+                
                 perfTimer.mark('email-end');
 
                 log(
@@ -51,26 +58,33 @@ async function saveMessage(messageData, correlationId = null) {
                 log(
                     LogSeverity.WARNING,
                     'Email sending failed, continuing with DB save',
-                    { recipient: emailRecipient },
+                    { 
+                        recipient: emailRecipient,
+                        circuitState: emailError.circuitState || 'N/A'
+                    },
                     correlationId
                 );
             }
         }
 
-        // Save to Firestore
+        // Save to Firestore with retry logic
         const db = getDb();
         const admin = getAdmin();
         perfTimer.mark('db-save-start');
 
-        const docRef = await db.collection("messages").add({
-            firstName,
-            lastName,
-            email,
-            phoneNumber,
-            message,
-            emailMessageId: emailInfo?.messageId || null,
-            submittedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        const docRef = await withRetry(
+            () => db.collection("messages").add({
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+                message,
+                emailMessageId: emailInfo?.messageId || null,
+                submittedAt: admin.firestore.FieldValue.serverTimestamp()
+            }),
+            'saveContactMessage',
+            correlationId
+        );
 
         perfTimer.mark('db-save-end');
 

@@ -562,6 +562,7 @@ The application includes several performance enhancements to ensure fast page lo
 ### In-Memory Caching
 
 **Features:**
+
 - **TTL-based caching**: Gallery (1 hour), Tours (1 hour), Testimonials (30 minutes)
 - **Hit/Miss tracking**: Monitor cache effectiveness
 - **Automatic cleanup**: Expired entries removed every 5 minutes

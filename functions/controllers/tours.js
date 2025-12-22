@@ -1,9 +1,10 @@
 // controllers/tours.js
-// Tours data controller with structured logging and caching
+// Tours data controller with structured logging, caching, and retry logic
 
 const { getDb } = require('../config/firebase');
 const { log, logError, LogSeverity, PerformanceTimer } = require('../middleware/logger');
 const { cache } = require('../middleware/memoryCache');
+const { withRetry } = require('../utils/retry');
 
 // Cache TTL: 1 hour (data changes infrequently)
 const CACHE_TTL = 3600;
@@ -24,7 +25,12 @@ async function getAllTours(correlationId = null) {
                 const db = getDb();
                 perfTimer.mark('db-query-start');
 
-                const snapshot = await db.collection("tours").orderBy("tourName", "asc").get();
+                // Wrap Firestore query with retry logic
+                const snapshot = await withRetry(
+                    () => db.collection("tours").orderBy("tourName", "asc").get(),
+                    'fetchTours',
+                    correlationId
+                );
                 perfTimer.mark('db-query-end');
                 
                 const result = snapshot.empty
@@ -70,7 +76,27 @@ async function getAllTours(correlationId = null) {
         return tours;
     } catch (error) {
         logError(error, 'getAllTours', correlationId);
-        throw error;
+        
+        // Graceful degradation: return cached data even if expired, or empty array
+        const staleData = cache.get(cacheKey);
+        if (staleData) {
+            log(
+                LogSeverity.WARNING,
+                'Returning stale cache data due to error',
+                { operation: 'getAllTours' },
+                correlationId
+            );
+            return staleData;
+        }
+        
+        // Return empty array as last resort
+        log(
+            LogSeverity.ERROR,
+            'No data available, returning empty array',
+            { operation: 'getAllTours' },
+            correlationId
+        );
+        return [];
     }
 }
 

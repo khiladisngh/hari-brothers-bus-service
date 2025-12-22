@@ -1,0 +1,109 @@
+<%- include('partials/navbar') -%>
+<%- include('partials/toast') -%>
+
+<link rel="stylesheet" href="./stylesheets/styles.css" />
+
+<style>
+    .error-section {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+        padding: 4rem 0;
+    }
+    .error-container {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 600px;
+    }
+    .error-code {
+        font-size: 8rem;
+        font-weight: 900;
+        color: #dc3545;
+        margin: 0;
+        line-height: 1;
+    }
+    .error-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin: 1rem 0;
+    }
+    .error-message {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    .btn-home {
+        background: #03A678;
+        border: none;
+        color: white;
+        padding: 12px 40px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+    .btn-home:hover {
+        background: #028a63;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(3, 166, 120, 0.3);
+        color: white;
+    }
+    .error-details {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: #666;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .retry-info {
+        margin-top: 1.5rem;
+        color: #999;
+        font-size: 0.95rem;
+    }
+    .retry-info a {
+        color: #03A678;
+        text-decoration: none;
+    }
+    .retry-info a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<section class="error-section">
+    <div class="container">
+        <div class="error-container" data-aos="fade-up">
+            <h1 class="error-code">500</h1>
+            <h2 class="error-title">Internal Server Error</h2>
+            <p class="error-message">
+                Sorry, something went wrong on our end. We're working to fix it!
+            </p>
+            <a href="/" class="btn-home">Go to Homepage</a>
+            
+            <% if (typeof error !== 'undefined' && error && error.message) { %>
+            <div class="error-details">
+                <strong>Error:</strong> <%= error.message %>
+                <% if (process.env.FUNCTIONS_EMULATOR === 'true' && error.stack) { %>
+                <pre style="text-align: left; margin-top: 1rem; overflow-x: auto; font-size: 0.8rem; white-space: pre-wrap;"><%= error.stack %></pre>
+                <% } %>
+            </div>
+            <% } %>
+            
+            <div class="retry-info">
+                Please try again in a few moments or <a href="/contact">contact us</a> if the problem persists.
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') -%>
+<%- include('partials/foot') -%>

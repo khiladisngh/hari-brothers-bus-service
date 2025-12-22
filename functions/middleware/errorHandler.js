@@ -1,5 +1,5 @@
 // middleware/errorHandler.js
-// Error handling middleware with structured logging
+// Error handling middleware with structured logging and custom error pages
 
 const createError = require("http-errors");
 const { logError, LogSeverity, log } = require("./logger");
@@ -22,7 +22,7 @@ function notFoundHandler(req, res, next) {
 }
 
 /**
- * Global error handler
+ * Global error handler with custom error pages
  */
 function errorHandler(err, req, res, next) {
     const status = err.status || 500;
@@ -34,7 +34,7 @@ function errorHandler(err, req, res, next) {
         `${req.method} ${req.path}`,
         req.correlationId
     );
-
+    
     // Log additional context for server errors
     if (isServerError) {
         log(
@@ -52,9 +52,23 @@ function errorHandler(err, req, res, next) {
         );
     }
 
+    // Set response locals
     res.locals.message = err.message;
     res.locals.error = process.env.FUNCTIONS_EMULATOR === 'true' ? err : {};
-    res.status(status).render("error");
+    
+    // Use custom error pages
+    res.status(status);
+    
+    if (status === 404) {
+        return res.render('404');
+    }
+    
+    if (isServerError) {
+        return res.render('500');
+    }
+    
+    // Fallback to generic error page
+    res.render('error');
 }
 
 module.exports = { notFoundHandler, errorHandler };
