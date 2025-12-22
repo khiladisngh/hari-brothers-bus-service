@@ -17,6 +17,7 @@
     "source": "functions"
   },
   "emulators": {
+    "host": "0.0.0.0",
     "functions": {
       "port": 5001
     },

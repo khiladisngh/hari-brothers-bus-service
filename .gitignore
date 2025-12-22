@@ -124,3 +124,5 @@ tempCodeRunnerFile.js
 /node_modules
 /.firebase/*
 secrets/
+
+.env
