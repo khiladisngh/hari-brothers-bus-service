@@ -17,11 +17,16 @@ async function getAllGalleryImages() {
         
         const galleryItems = snapshot.empty
             ? []
-            : snapshot.docs.map(doc => ({
-                id: doc.id,
-                imageUrl: doc.data().imageUrl || '',
-                altText: doc.data().altText || "Gallery Image"
-            }));
+            : snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    // Support both old format (imageUrl) and new format (imageUrls)
+                    imageUrl: data.imageUrl || data.imageUrls?.jpeg?.medium || '',
+                    imageUrls: data.imageUrls || null, // New format with multiple sizes
+                    altText: data.altText || "Gallery Image"
+                };
+            });
         
         logger.info("Gallery images fetched", {
             count: galleryItems.length,

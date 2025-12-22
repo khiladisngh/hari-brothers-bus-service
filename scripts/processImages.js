@@ -3,6 +3,7 @@
 const admin = require("firebase-admin");
 const fs = require("fs").promises;
 const path = require("path");
+const sharp = require("sharp");
 
 // Load .env for potential non-emulator runs or other config
 require("dotenv").config({ path: path.join(__dirname, '..', '.env') }); // Look for .env in root
@@ -22,6 +23,14 @@ const outputGalleryJsonPath = path.join(outputJsonDir, "galleryImages.json");
 const supportedImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 const toursStoragePrefix = 'tours/';
 const galleryStoragePrefix = 'gallery/';
+
+// Image size configurations
+const IMAGE_SIZES = {
+    thumbnail: { width: 300, quality: 80 },
+    medium: { width: 800, quality: 85 },
+    large: { width: 1200, quality: 90 }
+};
+
 // --- End Configuration ---
 
 // --- Firebase Initialization ---
@@ -86,6 +95,117 @@ async function findImageFile(directory, baseName) {
         }
     }
     return null;
+}
+
+/**
+ * Process image into multiple sizes and formats (WebP + JPEG)
+ * @param {string} localPath - Local path to source image
+ * @returns {Promise<Object>} Object with buffers for different sizes/formats
+ */
+async function processImageSizes(localPath) {
+    const processed = {
+        webp: {},
+        jpeg: {}
+    };
+
+    try {
+        const image = sharp(localPath);
+        const metadata = await image.metadata();
+
+        // Process each size
+        for (const [sizeName, config] of Object.entries(IMAGE_SIZES)) {
+            // Only resize if image is larger than target size
+            const targetWidth = Math.min(config.width, metadata.width || config.width);
+
+            // WebP version
+            processed.webp[sizeName] = await sharp(localPath)
+                .resize(targetWidth, null, { withoutEnlargement: true })
+                .webp({ quality: config.quality })
+                .toBuffer();
+
+            // JPEG version
+            processed.jpeg[sizeName] = await sharp(localPath)
+                .resize(targetWidth, null, { withoutEnlargement: true })
+                .jpeg({ quality: config.quality, mozjpeg: true })
+                .toBuffer();
+        }
+
+        // Add original (just optimized, not resized)
+        processed.webp.original = await sharp(localPath)
+            .webp({ quality: 90 })
+            .toBuffer();
+
+        processed.jpeg.original = await sharp(localPath)
+            .jpeg({ quality: 90, mozjpeg: true })
+            .toBuffer();
+
+        return processed;
+    } catch (error) {
+        console.error(`  Error processing image sizes for ${path.basename(localPath)}:`, error.message);
+        return null;
+    }
+}
+
+/**
+ * Upload processed image buffers to storage
+ * @param {Object} bucket - Storage bucket
+ * @param {Object} processed - Processed image buffers
+ * @param {string} baseDestPath - Base destination path without extension
+ * @returns {Promise<Object>} URLs for all sizes and formats
+ */
+async function uploadProcessedImages(bucket, processed, baseDestPath) {
+    const isEmulator = !!process.env.STORAGE_EMULATOR_HOST;
+    const urls = {
+        webp: {},
+        jpeg: {}
+    };
+
+    try {
+        const wslIP = process.env.WSL_IP;
+        let emulatorHost = isEmulator
+            ? process.env.STORAGE_EMULATOR_HOST.replace('http://', '').replace('https://', '')
+            : null;
+
+        if (isEmulator && wslIP) {
+            emulatorHost = emulatorHost.replace('127.0.0.1', wslIP).replace('0.0.0.0', wslIP);
+        }
+
+        // Upload all sizes and formats
+        for (const format of ['webp', 'jpeg']) {
+            for (const [sizeName, buffer] of Object.entries(processed[format])) {
+                const ext = format === 'webp' ? '.webp' : '.jpg';
+                const destPath = `${baseDestPath}-${sizeName}${ext}`;
+
+                // Upload buffer
+                const file = bucket.file(destPath);
+                await file.save(buffer, {
+                    metadata: {
+                        contentType: `image/${format === 'webp' ? 'webp' : 'jpeg'}`,
+                        cacheControl: 'public, max-age=31536000'
+                    }
+                });
+
+                // Generate URL
+                if (isEmulator) {
+                    const pathSegments = destPath.split('/');
+                    const encodedPath = pathSegments.map(segment => encodeURIComponent(segment)).join('%2F');
+                    urls[format][sizeName] = `http://${emulatorHost}/v0/b/${bucket.name}/o/${encodedPath}?alt=media`;
+                } else {
+                    await file.makePublic();
+                    const [signedUrl] = await file.getSignedUrl({
+                        action: 'read',
+                        expires: '01-01-2100'
+                    });
+                    urls[format][sizeName] = signedUrl;
+                }
+            }
+        }
+
+        return urls;
+    } catch (error) {
+        console.error(`  Error uploading processed images:`, error.message);
+        return null;
+    }
 }
 
 async function uploadFileAndGetPublicUrl(bucket, localPath, destinationPath) {
@@ -187,19 +307,42 @@ async function processTourImages(bucket) {
         console.log(`Processing tour: ${tour.tourName}`);
         if (Array.isArray(tour.tourPlaces)) {
             for (const placeName of tour.tourPlaces) {
-                if (typeof placeName !== 'string' || !placeName.trim()) { console.warn(`  - Skipping invalid place name entry: ${placeName}`); continue; }
+                if (typeof placeName !== 'string' || !placeName.trim()) {
+                    console.warn(`  - Skipping invalid place name entry: ${placeName}`);
+                    continue;
+                }
+
                 const localImagePath = await findImageFile(toursImageSourceDir, placeName.trim());
-                let imageUrl = null;
-                let filenameUsed = localImagePath ? path.basename(localImagePath) : `${placeName}.jpg`; // Default filename for alt text
+                let imageUrls = null;
+                let filenameUsed = localImagePath ? path.basename(localImagePath) : `${placeName}.jpg`;
 
                 if (localImagePath) {
-                    // Don't encode here - let uploadFileAndGetAccessibleUrl handle encoding for the URL
-                    const destinationPath = `${toursStoragePrefix}${path.basename(localImagePath)}`;
-                    imageUrl = await uploadFileAndGetAccessibleUrl(bucket, localImagePath, destinationPath);
+                    // Process image into multiple sizes and formats
+                    console.log(`  Processing ${path.basename(localImagePath)}...`);
+                    const processed = await processImageSizes(localImagePath);
+
+                    if (processed) {
+                        // Base destination path without extension
+                        const fileNameWithoutExt = path.parse(path.basename(localImagePath)).name;
+                        const baseDestPath = `${toursStoragePrefix}${fileNameWithoutExt}`;
+
+                        // Upload all versions
+                        imageUrls = await uploadProcessedImages(bucket, processed, baseDestPath);
+
+                        if (imageUrls) {
+                            console.log(`  ✓ Uploaded ${path.basename(localImagePath)} (4 sizes × 2 formats)`);
+                        }
+                    }
                 } else {
                     console.warn(`  - Local image not found for place: "${placeName}" in ${toursImageSourceDir}`);
                 }
-                processedPlaces.push({ name: placeName, imageUrl: imageUrl, altText: deriveAltText(filenameUsed, `Image of `) });
+
+                // Add place data with image URLs (or null if not found)
+                processedPlaces.push({
+                    name: placeName,
+                    imageUrls: imageUrls, // Now contains webp/jpeg with multiple sizes
+                    altText: deriveAltText(filenameUsed, `Image of `)
+                });
             }
         }
         newToursData.push({ ...tour, tourPlaces: processedPlaces });
@@ -224,13 +367,30 @@ async function processGalleryImages(bucket) {
 
     for (const filename of imageFiles) {
         const localPath = path.join(galleryImageSourceDir, filename);
-        // Don't encode here - let uploadFileAndGetAccessibleUrl handle encoding for the URL
-        const destinationPath = `${galleryStoragePrefix}${filename}`;
-        const imageUrl = await uploadFileAndGetAccessibleUrl(bucket, localPath, destinationPath);
-        if (imageUrl) {
-            galleryData.push({ imageUrl: imageUrl, altText: deriveAltText(filename, `Gallery image: `), order: orderIndex++ });
+
+        console.log(`  Processing ${filename}...`);
+        const processed = await processImageSizes(localPath);
+
+        if (processed) {
+            // Base destination path without extension
+            const fileNameWithoutExt = path.parse(filename).name;
+            const baseDestPath = `${galleryStoragePrefix}${fileNameWithoutExt}`;
+
+            // Upload all versions
+            const imageUrls = await uploadProcessedImages(bucket, processed, baseDestPath);
+
+            if (imageUrls) {
+                console.log(`  ✓ Uploaded ${filename} (4 sizes × 2 formats)`);
+                galleryData.push({
+                    imageUrls: imageUrls, // Now contains webp/jpeg with multiple sizes
+                    altText: deriveAltText(filename, `Gallery image: `),
+                    order: orderIndex++
+                });
+            } else {
+                console.warn(`  - Skipping gallery image ${filename} due to upload failure.`);
+            }
         } else {
-            console.warn(`  - Skipping gallery image ${filename} due to upload failure.`);
+            console.warn(`  - Skipping gallery image ${filename} due to processing failure.`);
         }
     }
     try {

@@ -17,7 +17,22 @@ async function getAllTours() {
         
         const tours = snapshot.empty
             ? []
-            : snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            : snapshot.docs.map(doc => {
+                const data = doc.data();
+                // Support both old and new format for tour places
+                const tourPlaces = data.tourPlaces?.map(place => ({
+                    ...place,
+                    // Support old format (imageUrl) and new format (imageUrls)
+                    imageUrl: place.imageUrl || place.imageUrls?.jpeg?.medium || null,
+                    imageUrls: place.imageUrls || null
+                })) || [];
+
+                return {
+                    id: doc.id,
+                    ...data,
+                    tourPlaces
+                };
+            });
         
         logger.info("Tours fetched", {
             count: tours.length,

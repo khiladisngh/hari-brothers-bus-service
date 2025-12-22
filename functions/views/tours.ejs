@@ -29,19 +29,30 @@
                 <% if (tour.tourPlaces && tour.tourPlaces.length > 0) { %>
                   <% tour.tourPlaces.forEach((place, placeIndex) => { %>
                     <div class="col-sm-12 col-md-6 col-lg-4">
-                      <%# Check if imageUrl exists before showing img tag %>
-                      <% if (place.imageUrl) { %>
+                      <% if (place.imageUrls) { %>
+                        <%# New responsive image format %>
+                          <picture>
+                            <source srcset="<%= place.imageUrls.webp.thumbnail %> 300w,
+                                                          <%= place.imageUrls.webp.medium %> 800w"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px" type="image/webp">
+                            <img src="<%= place.imageUrls.jpeg.medium %>" srcset="<%= place.imageUrls.jpeg.thumbnail %> 300w,
+                                                          <%= place.imageUrls.jpeg.medium %> 800w"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px" alt="<%= place.altText || place.name %>"
+                              class="my-2 w-100 w-sm-auto" loading="lazy" />
+                          </picture>
+                          <% } else if (place.imageUrl) { %>
+                            <%# Fallback for old single-image format %>
                         <img
-                          src="<%= place.imageUrl %>"  <%# Use imageUrl from Firestore data %>
-                          alt="<%= place.altText || place.name %>" <%# Use altText or name %>
+                          src="<%= place.imageUrl %>"
+                          alt="<%= place.altText || place.name %>"
                           class="my-2 w-100 w-sm-auto"
                           loading="lazy"
                         />
                       <% } else { %>
-                        <%# Optional: Placeholder if image URL is missing %>
+                        <%# Placeholder if no image %>
                         <div class="my-2 w-100 w-sm-auto" style="height: 300px; background-color: #e0e0e0; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #757575;">No Image Available</div>
                       <% } %>
-                      <p class="tour-places h5"><%- place.name %></p> <%# Use place name %>
+                      <p class="tour-places h5"><%- place.name %></p>
                     </div>
                   <% }) %>
                 <% } else { %>

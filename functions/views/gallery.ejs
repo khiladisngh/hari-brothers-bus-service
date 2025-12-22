@@ -18,15 +18,33 @@
           <% galleryItems.forEach((item, index) => { %>
             <%# Use static Bootstrap columns instead of lodash %>
             <div class="col-12 col-sm-6 col-md-4 p-2">
-              <a class="lightbox" href="<%= item.imageUrl %>"> <%# Use imageUrl from Firestore data %>
-                <img
-                  src="<%= item.imageUrl %>" <%# Use imageUrl from Firestore data %>
-                  class="shadow-1-strong mb-4"
-                  alt="<%= item.altText || 'Gallery Image' %>" <%# Use altText from Firestore data %>
-                  data-aos="slide-left"
-                  loading="lazy"
-                />
-              </a>
+              <% if (item.imageUrls) { %>
+                <%# New responsive image format %>
+                  <a class="lightbox" href="<%= item.imageUrls.jpeg.large || item.imageUrls.jpeg.original %>">
+                    <picture>
+                      <source srcset="<%= item.imageUrls.webp.thumbnail %> 300w,
+                                            <%= item.imageUrls.webp.medium %> 800w,
+                                            <%= item.imageUrls.webp.large %> 1200w"
+                        sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw" type="image/webp">
+                      <img src="<%= item.imageUrls.jpeg.medium %>" srcset="<%= item.imageUrls.jpeg.thumbnail %> 300w,
+                                            <%= item.imageUrls.jpeg.medium %> 800w,
+                                            <%= item.imageUrls.jpeg.large %> 1200w"
+                        sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw" class="shadow-1-strong mb-4"
+                        alt="<%= item.altText || 'Gallery Image' %>" data-aos="slide-left" loading="lazy" />
+                    </picture>
+                  </a>
+                  <% } else { %>
+                    <%# Fallback for old single-image format %>
+                      <a class="lightbox" href="<%= item.imageUrl %>">
+                        <img
+                    src="<%= item.imageUrl %>"
+                    class="shadow-1-strong mb-4"
+                    alt="<%= item.altText || 'Gallery Image' %>"
+                      data-aos="slide-left"
+                      loading="lazy"
+                      />
+                      </a>
+              <% } %>
             </div>
           <% }) %>
         <% } else { %>
