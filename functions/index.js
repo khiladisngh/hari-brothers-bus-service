@@ -100,13 +100,23 @@ app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: false })); // For parsing application/x-www-form-urlencoded
 app.use(cookieParser()); // Parse cookies
 
-// Helper for cache headers
-const setCacheHeaders = (res) => {
-    // Example: Cache for 5 mins in browser, 10 mins in CDN
-    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+// Helper for cache headers with configurable durations
+const setCacheHeaders = (res, maxAge = 300, sMaxAge = 3600) => {
+    // maxAge: browser cache, sMaxAge: CDN cache
+    res.set("Cache-Control", `public, max-age=${maxAge}, s-maxage=${sMaxAge}`);
+    res.set("CDN-Cache-Control", `public, max-age=${sMaxAge}`);
 };
 
 // --- Routes ---
+
+// Health check endpoint for monitoring
+app.get("/health", (req, res) => {
+    res.status(200).json({ 
+        status: "ok", 
+        timestamp: Date.now(),
+        service: "hari-brothers-bus-service"
+    });
+});
 
 // HOME ROUTE
 app.get("/", async (req, res, next) => {
@@ -120,7 +130,7 @@ app.get("/", async (req, res, next) => {
             testimonials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             logger.info(`Fetched ${testimonials.length} testimonials.`);
         }
-        setCacheHeaders(res);
+        setCacheHeaders(res, 600, 1800); // 10 min browser, 30 min CDN
         res.render("home", { testimonials: testimonials });
     } catch (error) {
         logger.error("Error fetching testimonials:", error);
@@ -141,7 +151,7 @@ app.get("/tours", async (req, res, next) => {
             tours = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             logger.info(`Fetched ${tours.length} tours.`);
         }
-        setCacheHeaders(res);
+        setCacheHeaders(res, 3600, 7200); // 1 hour browser, 2 hours CDN
         // Pass data expected by the updated tours.ejs
         res.render("tours", { toursData: tours });
     } catch (error) {
@@ -171,7 +181,7 @@ app.get("/gallery", async (req, res, next) => {
             logger.info(`Fetched ${galleryItems.length} gallery items from Firestore.`);
         }
 
-        setCacheHeaders(res);
+        setCacheHeaders(res, 3600, 7200); // 1 hour browser, 2 hours CDN
         // Pass data expected by the updated gallery.ejs
         res.render("gallery", {
             galleryItems: galleryItems
@@ -187,21 +197,21 @@ app.get("/gallery", async (req, res, next) => {
 // ABOUT ROUTE
 app.get("/about", (req, res) => {
     logger.info("Accessing About route");
-    setCacheHeaders(res);
+    setCacheHeaders(res, 86400, 86400); // 24 hours (static content)
     res.render("about");
 });
 
 // PAY ROUTE
 app.get("/pay", (req, res) => {
     logger.info("Accessing Pay route");
-    setCacheHeaders(res);
+    setCacheHeaders(res, 86400, 86400); // 24 hours (static content)
     res.render("pay");
 });
 
 // CONTACT ROUTE - GET
 app.get("/contact", (req, res) => {
     logger.info("Accessing Contact route (GET)");
-    setCacheHeaders(res);
+    // No cache for contact form to ensure fresh CSRF tokens/forms
     res.render("contact", { success: req.query.success === 'true' });
 });
 
