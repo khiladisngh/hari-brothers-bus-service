@@ -1,5 +1,7 @@
 // middleware/cache.js
-// Cache headers middleware
+// Cache headers and ETag middleware
+
+const crypto = require('crypto');
 
 /**
  * Set cache control headers for responses
@@ -22,4 +24,51 @@ function setCacheHeadersDirectly(res, maxAge = 300, sMaxAge = 3600) {
     res.set("CDN-Cache-Control", `public, max-age=${sMaxAge}`);
 }
 
-module.exports = { setCacheHeaders, setCacheHeadersDirectly };
+/**
+ * Generate ETag from content
+ * @param {string|Buffer} content - Content to hash
+ * @returns {string} ETag value
+ */
+function generateETag(content) {
+    return `"${crypto
+        .createHash('md5')
+        .update(content)
+        .digest('hex')}"`;
+}
+
+/**
+ * Middleware to add ETag support for responses
+ * Enables 304 Not Modified responses for unchanged content
+ */
+function etagMiddleware(req, res, next) {
+    const originalSend = res.send;
+    
+    res.send = function(body) {
+        // Only add ETag for GET/HEAD requests with 200 status
+        if ((req.method === 'GET' || req.method === 'HEAD') && res.statusCode === 200) {
+            if (body && (typeof body === 'string' || Buffer.isBuffer(body))) {
+                const etag = generateETag(body);
+                res.set('ETag', etag);
+                
+                // Check if client has cached version
+                const clientETag = req.get('If-None-Match');
+                if (clientETag === etag) {
+                    // Content hasn't changed, send 304
+                    res.status(304);
+                    return originalSend.call(this, '');
+                }
+            }
+        }
+        
+        return originalSend.call(this, body);
+    };
+    
+    next();
+}
+
+module.exports = { 
+    setCacheHeaders, 
+    setCacheHeadersDirectly,
+    etagMiddleware,
+    generateETag
+};

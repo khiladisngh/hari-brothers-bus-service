@@ -1,8 +1,12 @@
 // controllers/testimonials.js
-// Testimonials data controller with structured logging
+// Testimonials data controller with structured logging and caching
 
 const { getDb } = require('../config/firebase');
 const { log, logError, LogSeverity, PerformanceTimer } = require('../middleware/logger');
+const { cache } = require('../middleware/memoryCache');
+
+// Cache TTL: 30 minutes (displayed on home page)
+const CACHE_TTL = 1800;
 
 /**
  * Fetch all testimonials from Firestore
@@ -11,17 +15,25 @@ const { log, logError, LogSeverity, PerformanceTimer } = require('../middleware/
  */
 async function getAllTestimonials(correlationId = null) {
     const perfTimer = new PerformanceTimer(correlationId);
+    const cacheKey = 'testimonials:all';
     
     try {
-        const db = getDb();
-        perfTimer.mark('db-query-start');
+        const testimonials = await cache.getOrSet(
+            cacheKey,
+            async () => {
+                const db = getDb();
+                perfTimer.mark('db-query-start');
 
-        const snapshot = await db.collection("testimonials").get();
-        perfTimer.mark('db-query-end');
-        
-        const testimonials = snapshot.empty
-            ? []
-            : snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const snapshot = await db.collection("testimonials").get();
+                perfTimer.mark('db-query-end');
+                
+                return snapshot.empty
+                    ? []
+                    : snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            },
+            CACHE_TTL,
+            correlationId
+        );
         
         log(
             LogSeverity.INFO,
@@ -29,7 +41,8 @@ async function getAllTestimonials(correlationId = null) {
             {
                 operation: 'getAllTestimonials',
                 count: testimonials.length,
-                queryTimeMs: perfTimer.getDuration('db-query-start', 'db-query-end'),
+                cached: perfTimer.getDuration() < 10,
+                queryTimeMs: perfTimer.getDuration('db-query-start', 'db-query-end') || 0,
                 totalTimeMs: perfTimer.getDuration()
             },
             correlationId

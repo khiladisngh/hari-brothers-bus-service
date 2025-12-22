@@ -1,9 +1,10 @@
 // routes/static.js
-// Static page routes (About, Pay, Health)
+// Static page routes (About, Pay, Health) and performance monitoring
 
 const express = require('express');
 const router = express.Router();
 const { setCacheHeadersDirectly } = require('../middleware/cache');
+const { cache } = require('../middleware/memoryCache');
 
 // About page
 router.get('/about', (req, res) => {
@@ -23,6 +24,16 @@ router.get('/health', (req, res) => {
         status: 'ok',
         timestamp: Date.now(),
         service: 'hari-brothers-bus-service'
+    });
+});
+
+// Cache statistics endpoint (for monitoring)
+router.get('/cache-stats', (req, res) => {
+    const stats = cache.getStats();
+    res.status(200).json({
+        service: 'hari-brothers-bus-service',
+        cacheStats: stats,
+        timestamp: Date.now()
     });
 });
 
