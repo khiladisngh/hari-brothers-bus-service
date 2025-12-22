@@ -1,206 +1,442 @@
 # Hari Brothers Bus Service Website
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/khiladisngh/hari-brothers-bus-service/firebase-deploy.yml?branch=master)](https://github.com/khiladisngh/hari-brothers-bus-service/actions/workflows/firebase-deploy.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange)](https://firebase.google.com/docs/hosting)
-[![Firebase Functions](https://img.shields.io/badge/Firebase-Functions_v2-orange)](https://firebase.google.com/docs/functions)
-[![Cloud Firestore](https://img.shields.io/badge/Cloud-Firestore-blue)](https://firebase.google.com/docs/firestore)
-[![Cloud Storage](https://img.shields.io/badge/Cloud-Storage-blue)](https://firebase.google.com/docs/storage)
-[![Node.js](https://img.shields.io/badge/Node.js-20.x-green)](https://nodejs.org/)
+A dynamic bus service website built with Firebase, featuring tour listings, gallery, testimonials, and a contact form.
 
-This repository contains the source code for the Hari Brothers Bus Service website. It features a dynamic frontend rendered using EJS, served via Firebase Hosting, and powered by a Node.js backend running on Firebase Cloud Functions (Gen 2). Data, including tour details, gallery images, and testimonials, is managed using Cloud Firestore, with image files stored in Cloud Storage for Firebase.
+## Tech Stack
 
-## Features
+- **Firebase Hosting** - Static file serving
+- **Firebase Functions** - Node.js 24 backend (Gen 1 for emulator compatibility)
+- **Cloud Firestore** - Database for tours, gallery, testimonials
+- **Cloud Storage** - Image storage
+- **Express.js + EJS** - Web framework and templating
+- **Nodemailer** - Email notifications
 
-* Dynamic tour listings with associated place details and images fetched from Firestore/Cloud Storage.
-* Dynamic image gallery populated from Firestore/Cloud Storage.
-* Testimonials displayed from Firestore.
-* Contact form that sends email notifications (via Nodemailer/Gmail) and saves messages to Firestore.
-* Uses Firebase Emulator Suite for local development and testing.
-* Automated deployment via GitHub Actions (optional setup).
+## Prerequisites
 
-## Getting Started
+- **Node.js 24.x** - [Download here](https://nodejs.org/)
+- **Firebase CLI** - Install globally:
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+  ```bash
+  npm install -g firebase-tools
+  ```
 
-### Prerequisites
+- **Firebase Project** - Create at [Firebase Console](https://console.firebase.google.com/)
+  - Enable: Firestore, Cloud Storage, Cloud Functions
+- **Gmail App Password** - For contact form emails (16-character code)
 
-* [Node.js](https://nodejs.org/) (v20.x recommended, as specified in `functions/package.json`)
-* [npm](https://www.npmjs.com/) (comes with Node.js)
-* [Firebase CLI](https://firebase.google.com/docs/cli#install_the_firebase_cli):
-    ```bash
-    npm install -g firebase-tools
-    ```
-* Firebase Account and Project: You'll need a Firebase project created at [https://console.firebase.google.com/](https://console.firebase.google.com/). Ensure Firestore, Cloud Storage, and Cloud Functions (Node.js 20 runtime) are enabled for the project.
-* **(Optional but Recommended for Local Scripts)** [Google Cloud SDK (gcloud CLI)](https://cloud.google.com/sdk/docs/install): Needed if you plan to use Application Default Credentials (ADC) for local helper scripts instead of a service account key.
+---
 
-### Installation
+## Initial Setup
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <your-repository-url>
-    cd hari-brothers-bus-service # Or your repo name
-    ```
-2.  **Install Root Dependencies:** (Installs `firebase-admin` for helper scripts)
-    ```bash
-    npm install
-    ```
-3.  **Install Function Dependencies:**
-    ```bash
-    cd functions
-    npm install
-    cd ..
-    ```
-4.  **Configure Firebase Project:**
-    * Log in to Firebase:
-        ```bash
-        firebase login
-        ```
-    * Select your Firebase project (replace `your-firebase-project-id` with your actual project ID, e.g., `hari-bus-service-8d1fa`):
-        ```bash
-        firebase use your-firebase-project-id
-        ```
+### 1. Clone & Install
 
-### Environment Configuration & Secrets
+```bash
+# Clone repository
+git clone https://github.com/khiladisngh/hari-brothers-bus-service.git
+cd hari-brothers-bus-service
 
-Configuration is handled differently for the deployed Cloud Function versus the local helper scripts.
+# Install dependencies
+npm install                    # Root dependencies
+cd functions && npm install   # Function dependencies
+cd ..
+```
 
-**1. Cloud Function Runtime Configuration (Live Deployment):**
+### 2. Firebase Configuration
 
-The deployed `app` function requires these environment variables:
+```bash
+# Login to Firebase
+firebase login
 
-* `EMAIL_USER`: The Gmail address used for sending contact form emails.
-* `CONTACT_FORM_RECIPIENT`: The email address where contact form submissions should be sent.
-* `EMAIL_PASSWORD`: The 16-character Gmail App Password for the `EMAIL_USER` account. **This MUST be handled securely.**
+# Link to your Firebase project (replace with your project ID)
+firebase use your-project-id
+```
 
-**Setup using Secret Manager (Recommended for `EMAIL_PASSWORD`):**
+### 3. Environment Setup
 
-1.  **Set the Secret:** In your terminal (project root), run:
-    ```bash
-    # Replace EMAIL_PASSWORD with the actual secret name if different
-    firebase functions:secrets:set EMAIL_PASSWORD
-    ```
-    Follow the prompts to enter your 16-character Gmail App Password.
-2.  **Grant Access:** Allow your function's service account to access the secret:
-    ```bash
-    # Replace EMAIL_PASSWORD if needed, and ensure 'app' matches your function name
-    firebase functions:secrets:grantaccess EMAIL_PASSWORD --roles=secretmanager.secretAccessor --functions=app
-    ```
-3.  **Update Function Code:** Ensure `functionOptions` in `functions/index.js` includes the secret:
-    ```javascript
-    const functionOptions = {
-        region: "asia-south1", // Or your region
-        secrets: ["EMAIL_PASSWORD"], // Access the secret
-        // ... other options
-    };
-    exports.app = onRequest(functionOptions, app);
-    ```
-    Your code accessing `process.env.EMAIL_PASSWORD` will automatically receive the secret value at runtime.
+Create `functions/.env` file:
 
-4.  **Set Other Variables:** For non-sensitive variables (`EMAIL_USER`, `CONTACT_FORM_RECIPIENT`), you can set them:
-    * Directly in the Google Cloud Console (Cloud Functions > Select 'app' > Edit > Runtime, build... > Runtime environment variables).
-    * **OR** Via a `.env` file *inside the `functions` directory* (e.g., `functions/.env`). Make sure this file is included in deployment if you use this method and **DO NOT** put secrets in it. The `require("dotenv").config()` line in `functions/index.js` will load these.
+```env
+EMAIL_USER=your-email@gmail.com
+CONTACT_FORM_RECIPIENT=recipient@example.com
+EMAIL_PASSWORD=your-16-char-app-password
+```
 
-**2. Local Helper Scripts Configuration (`scripts/*.js`):**
+> **Important:** Add `functions/.env` to `.gitignore` - never commit credentials!
 
-These scripts (`processImages.js`, `uploadDataToFirestore.js`) run locally using Node.js and need to authenticate with Firebase Admin SDK, especially when targeting your *live* project.
+---
 
-* **Authentication:**
-    * **Recommended:** Use a Service Account Key.
-        1.  Download the key JSON file from Firebase Console (Project Settings > Service accounts > Generate new private key).
-        2.  Create a `secrets/` directory at the project root.
-        3.  Save the downloaded key as `secrets/serviceAccountKey.json`.
-        4.  **Crucially:** Add `secrets/` to your root `.gitignore` file. **NEVER COMMIT THIS KEY.**
-        The scripts are configured to look for this key file when emulator variables are not detected.
-    * **Alternative:** Use Application Default Credentials (ADC). Run `gcloud auth application-default login` in your terminal. The scripts will attempt to use ADC if the service account key is not found and emulators are not detected. Ensure your logged-in gcloud user has the necessary permissions (Storage Admin, Firestore User).
-* **Other Config:** The scripts might use variables from a root `.env` file if needed (e.g., `FIREBASE_STORAGE_BUCKET`).
+## Local Development (Emulator)
 
-### Running Locally (Emulator Suite)
+### Start Emulators
 
-Use the Firebase Emulator Suite for local development and testing *before* deploying or running scripts against live data.
+**If using WSL2 on Windows:**
 
-1.  **Start Emulators:**
-    ```bash
-    firebase emulators:start --import=./exported-emulator-data --export-on-exit
-    ```
-    *(Adjust flags as needed. Keep this terminal running.)*
-2.  **Seed Emulator Data (Requires Local Images):**
-    * Ensure you have sample images in `public/images/tours/` and `public/images/gallery-page/`.
-    * Open a **separate terminal**.
-    * **Manually set emulator host variables** (needed because the script runs in a separate process):
-        * *(Bash/Zsh)*:
-            ```bash
-            export FIRESTORE_EMULATOR_HOST="127.0.0.1:8080"
-            export STORAGE_EMULATOR_HOST="127.0.0.1:9199"
-            ```
-        * *(Windows Cmd)*:
-            ```cmd
-            set FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
-            set STORAGE_EMULATOR_HOST=127.0.0.1:9199
-            ```
-        * *(Windows PowerShell)*:
-            ```powershell
-            $env:FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080"
-            $env:STORAGE_EMULATOR_HOST = "127.0.0.1:9199"
-            ```
-    * Run the image processing script (uploads to Storage Emulator, generates JSON with emulator URLs):
-        ```bash
-        node scripts/processImages.js
-        ```
-    * Run the Firestore seeding script (reads generated JSON, seeds Firestore Emulator):
-        ```bash
-        node scripts/uploadDataToFirestore.js
-        ```
-        *(If using PowerShell, remember to unset the env vars afterwards: `Remove-Item Env:\STORAGE_EMULATOR_HOST; Remove-Item Env:\FIRESTORE_EMULATOR_HOST`)*
-3.  **Access Locally:**
-    * **Website:** `http://127.0.0.1:5000` (served by Hosting Emulator)
-    * **Emulator UI:** `http://127.0.0.1:4000` (view Firestore/Storage data)
-    * **Function Endpoint (Direct):** `http://127.0.0.1:5001/your-project-id/your-region/app`
+```bash
+FUNCTIONS_DISCOVERY_TIMEOUT=30 firebase emulators:start --debug
+```
 
-### Data Seeding Scripts
+**On Mac/Linux/Native Windows:**
 
-Located in the `scripts/` directory:
+```bash
+firebase emulators:start
+```
 
-* **`processImages.js`:** Reads image files from `public/images/tours` and `public/images/gallery-page`. Uploads them to Cloud Storage (live or emulator based on environment). Generates `public/json/tours_with_metadata.json` and `public/json/galleryImages.json` containing image metadata, including Cloud Storage URLs. Requires images to be present locally and uses the original `public/json/tours.json` as input for tour place names.
-* **`uploadDataToFirestore.js`:** Reads the JSON files generated by `processImages.js` (and `public/json/testimonials.json`). Uploads this data to the relevant Firestore collections (live or emulator based on environment).
+The emulators will start on:
 
-Run these scripts locally *before* initial deployment to populate live data, or run them targeting emulators for local testing (as described in "Running Locally"). Ensure proper authentication (Service Account Key or ADC) when targeting live services.
+- **Website:** <http://127.0.0.1:5000> (or http://WSL_IP:5000 on WSL2)
+- **Emulator UI:** <http://127.0.0.1:4000> (or http://WSL_IP:4000 on WSL2)
+- **Functions:** Port 5001
+- **Firestore:** Port 8080
+- **Storage:** Port 9199
 
-## Deployment
+### Populate Emulator Data
 
-The project is configured for deployment to Firebase Hosting and Cloud Functions.
+In a **new terminal** (keep emulators running):
 
-* **Manual Deployment:** To deploy changes manually to your live Firebase project (after testing locally and potentially running seeding scripts against live data):
-    ```bash
-    firebase deploy --only functions,hosting
-    ```
-    *(This command deploys both the function code from `functions/` and the static web content from `public/`)*.
-* **GitHub Actions:** A workflow like `.github/workflows/firebase-deploy.yml` (you might need to create/adjust this) can be set up to automate deployment on pushes to the `main` branch or other triggers. This typically requires:
-    * Setting up a `FIREBASE_TOKEN` secret in your GitHub repository.
-    * Ensuring the workflow installs dependencies in both the root and `functions` directories.
-    * Running the `firebase deploy --only functions,hosting --token "${{ secrets.FIREBASE_TOKEN }}"` command.
-    *(Note: The provided helper scripts are generally NOT run as part of an automated deployment workflow unless specifically designed for it with appropriate CI/CD authentication like Workload Identity Federation or Base64 encoded service keys.)*
+```bash
+# On WSL2, get your IP first
+WSL_IP=$(hostname -I | awk '{print $1}')
 
-## Built With
+# Upload images to Storage Emulator and generate JSON
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 \
+STORAGE_EMULATOR_HOST=http://127.0.0.1:9199 \
+GCLOUD_PROJECT=your-project-id \
+FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com \
+WSL_IP=$WSL_IP \
+node scripts/processImages.js
 
-* [Firebase Hosting](https://firebase.google.com/docs/hosting) - Web Hosting
-* [Firebase Cloud Functions (Gen 2)](https://firebase.google.com/docs/functions) - Serverless Backend (Node.js 20)
-* [Cloud Firestore](https://firebase.google.com/docs/firestore) - NoSQL Database
-* [Cloud Storage for Firebase](https://firebase.google.com/docs/storage) - File Storage
-* [Node.js](https://nodejs.org/) - Backend Runtime
-* [Express.js](https://expressjs.com/) - Web Framework for Cloud Function
-* [EJS](https://ejs.co/) - Templating Engine
-* [Nodemailer](https://nodemailer.com/) - Email Sending
+# Upload data to Firestore Emulator
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 \
+GCLOUD_PROJECT=your-project-id \
+node scripts/uploadDataToFirestore.js
+```
 
-## Contributing
+**On Windows PowerShell:**
 
-Contributions are welcome! Please follow standard fork/branch/pull request workflow. Ensure code adheres to existing style and includes tests where appropriate.
+```powershell
+$env:FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080"
+$env:STORAGE_EMULATOR_HOST = "http://127.0.0.1:9199"
+$env:GCLOUD_PROJECT = "your-project-id"
+$env:FIREBASE_STORAGE_BUCKET = "your-project-id.appspot.com"
+
+node scripts/processImages.js
+node scripts/uploadDataToFirestore.js
+
+# Clean up env vars after
+Remove-Item Env:\FIRESTORE_EMULATOR_HOST
+Remove-Item Env:\STORAGE_EMULATOR_HOST
+Remove-Item Env:\GCLOUD_PROJECT
+Remove-Item Env:\FIREBASE_STORAGE_BUCKET
+```
+
+### Clear Emulator Data
+
+To reset emulator data, click **"Delete all files"** in Storage tab and **"Clear all data"** in Firestore tab at <http://127.0.0.1:4000>, then re-run the population scripts.
+
+---
+
+## Production Deployment
+
+### Initial Setup (One-time)
+
+#### 1. Configure Storage Rules
+
+Deploy storage rules that allow public read access:
+
+```bash
+firebase deploy --only storage
+```
+
+#### 2. Set Environment Variables
+
+**Option A: Secret Manager (Recommended for EMAIL_PASSWORD)**
+
+```bash
+# Set the secret
+firebase functions:secrets:set EMAIL_PASSWORD
+
+# Grant access to your function
+firebase functions:secrets:grantaccess EMAIL_PASSWORD \
+  --roles=secretmanager.secretAccessor \
+  --functions=app
+```
+
+**Option B: Environment Variables (via Console)**
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Navigate to: Functions > app function > Edit
+3. Runtime, build... > Runtime environment variables
+4. Add:
+   - `EMAIL_USER`: <your-email@gmail.com>
+   - `CONTACT_FORM_RECIPIENT`: <recipient@example.com>
+   - `EMAIL_PASSWORD`: your-16-char-app-password
+
+#### 3. Populate Production Data
+
+Ensure images exist in `public/images/tours/` and `public/images/gallery-page/`, then:
+
+```bash
+# Set authentication (choose one method):
+
+# Method A: Service Account Key
+# 1. Download key from Firebase Console > Project Settings > Service accounts
+# 2. Save as secrets/serviceAccountKey.json
+# 3. Add secrets/ to .gitignore
+# 4. Scripts will auto-detect the key
+
+# Method B: Application Default Credentials
+gcloud auth application-default login
+
+# Upload images to production Storage
+FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com \
+GCLOUD_PROJECT=your-project-id \
+node scripts/processImages.js
+
+# Upload data to production Firestore
+GCLOUD_PROJECT=your-project-id \
+node scripts/uploadDataToFirestore.js
+```
+
+### Deploy Code
+
+```bash
+# Deploy functions and hosting
+firebase deploy --only functions,hosting
+
+# Or use the npm script
+cd functions
+npm run deploy
+```
+
+### View Live Site
+
+Your site will be available at:
+
+- `https://your-project-id.web.app`
+- Or your custom domain if configured
+
+---
+
+## Project Structure
+
+```
+hari-brothers-bus-service/
+├── functions/
+│   ├── index.js              # Cloud Function (Express app)
+│   ├── package.json          # Node 24 runtime
+│   ├── .env                  # Local env vars (gitignored)
+│   └── views/                # EJS templates
+│       ├── home.ejs
+│       ├── tours.ejs
+│       ├── gallery.ejs
+│       └── partials/
+├── public/
+│   ├── images/
+│   │   ├── tours/           # Source images for tours
+│   │   └── gallery-page/    # Source images for gallery
+│   ├── json/
+│   │   ├── tours_with_metadata.json    # Generated by processImages.js
+│   │   ├── galleryImages.json          # Generated by processImages.js
+│   │   └── testimonials.json           # Manual data
+│   └── stylesheets/
+├── scripts/
+│   ├── processImages.js             # Upload images, generate JSON
+│   └── uploadDataToFirestore.js     # Seed Firestore from JSON
+├── firebase.json              # Firebase config
+├── firestore.rules           # Firestore security rules
+├── storage.rules             # Storage security rules
+└── README.md
+```
+
+---
+
+## Key Commands Reference
+
+### Emulator Commands
+
+```bash
+# Start emulators (WSL2)
+FUNCTIONS_DISCOVERY_TIMEOUT=30 firebase emulators:start --debug
+
+# Start emulators (Mac/Linux/Windows)
+firebase emulators:start
+
+# Populate emulator data (Bash/Zsh)
+WSL_IP=$(hostname -I | awk '{print $1}') && \
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 \
+STORAGE_EMULATOR_HOST=http://127.0.0.1:9199 \
+GCLOUD_PROJECT=your-project-id \
+FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com \
+WSL_IP=$WSL_IP \
+node scripts/processImages.js && \
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 \
+GCLOUD_PROJECT=your-project-id \
+node scripts/uploadDataToFirestore.js
+```
+
+### Production Commands
+
+```bash
+# Deploy everything
+firebase deploy
+
+# Deploy only functions and hosting
+firebase deploy --only functions,hosting
+
+# Deploy only storage rules
+firebase deploy --only storage
+
+# View function logs
+firebase functions:log
+```
+
+### Data Management Commands
+
+```bash
+# Process images and upload to Storage (detects emulator vs production)
+node scripts/processImages.js
+
+# Upload data to Firestore (detects emulator vs production)
+node scripts/uploadDataToFirestore.js
+```
+
+---
+
+## Troubleshooting
+
+### Emulator Issues
+
+**Problem:** "Function discovery timeout" on WSL2
+
+- **Solution:** Use `FUNCTIONS_DISCOVERY_TIMEOUT=30 firebase emulators:start --debug`
+
+**Problem:** Can't access emulator from Windows browser on WSL2
+
+- **Solution:**
+  - Use WSL IP address instead of localhost: `http://172.x.x.x:5000`
+  - Get IP: `hostname -I | awk '{print $1}'`
+  - Emulators are already configured to bind to `0.0.0.0`
+
+**Problem:** Images not loading in emulator
+
+- **Solution:**
+  - Check storage rules allow public read: `allow read: if true;`
+  - Restart emulators after rule changes
+  - Re-run `processImages.js` with correct environment variables
+
+**Problem:** Tours page blank but gallery works
+
+- **Solution:** Check browser console for errors, ensure Firestore data uploaded correctly
+
+### Production Issues
+
+**Problem:** Contact form not sending emails
+
+- **Solution:**
+  - Verify Gmail App Password is correct (16 characters)
+  - Check environment variables are set in Firebase Console
+  - Check function logs: `firebase functions:log`
+
+**Problem:** Images not loading in production
+
+- **Solution:**
+  - Verify storage rules deployed: `firebase deploy --only storage`
+  - Check Storage bucket has public read access
+  - Verify image URLs in Firestore point to correct bucket
+
+---
+
+## WSL2-Specific Notes
+
+If developing on **Windows with WSL2**:
+
+1. **Emulator Access:**
+   - From WSL terminal: `http://127.0.0.1:5000`
+   - From Windows browser: `http://WSL_IP:5000` (get IP with `hostname -I`)
+
+2. **Environment Variables:**
+   - WSL_IP is automatically set in `processImages.js` for emulator URLs
+   - Emulators bound to `0.0.0.0` for cross-platform access
+
+3. **Port Forwarding:**
+   - Windows doesn't always forward WSL2 ports automatically
+   - Use WSL IP directly in browser
+   - All emulator services accessible via WSL IP
+
+---
+
+## Data Scripts Explained
+
+### processImages.js
+
+**Purpose:** Upload images to Storage and generate JSON files with image URLs
+
+**Behavior:**
+
+- Detects emulator via `STORAGE_EMULATOR_HOST` environment variable
+- **Emulator mode:** Generates URLs like `http://WSL_IP:9199/v0/b/bucket/o/path`
+- **Production mode:** Uploads to live Storage, generates production URLs
+- Creates `tours_with_metadata.json` and `galleryImages.json`
+
+**Required Images:**
+
+- `public/images/tours/*.jpg` - Tour location images (match place names in tours.json)
+- `public/images/gallery-page/*.png` - Gallery images
+
+### uploadDataToFirestore.js
+
+**Purpose:** Upload JSON data to Firestore collections
+
+**Behavior:**
+
+- Detects emulator via `FIRESTORE_EMULATOR_HOST` environment variable
+- Reads JSON files from `public/json/`
+- Uploads to collections: `tours`, `galleryImages`, `testimonials`
+- Uses batching for efficient uploads
+
+**Collections:**
+
+- `tours`: 14 documents (tour name + places with images)
+- `galleryImages`: 12 documents (image URL, alt text, order)
+- `testimonials`: 4 documents (customer reviews)
+
+---
+
+## Security Notes
+
+### Never Commit
+
+- `functions/.env` - Contains email credentials
+- `secrets/serviceAccountKey.json` - Firebase admin credentials
+- `.firebase/` - Local Firebase CLI cache
+- `node_modules/` - Dependencies
+
+### Storage Rules
+
+**Development:** Allow public read for easy testing
+
+```javascript
+match /{allPaths=**} {
+  allow read: if true;
+  allow write: if false;
+}
+```
+
+**Production:** Consider restricting to specific paths or authenticated users
+
+### Firestore Rules
+
+Current rules allow public read, authenticated writes. Review `firestore.rules` and adjust based on security requirements.
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.md file (if created) for details.
+MIT License - See LICENSE file for details
 
-## Contact
+## Author
 
-* Project Maintainer: Gishant Singh * Project Link: [https://github.com/khiladisngh/hari-brothers-bus-service](https://github.com/khiladisngh/hari-brothers-bus-service) ```
+**Gishant Singh**
 
-This updated README provides a much more accurate picture of the project's current state, architecture, and setup requirements. Remember to potentially update the workflow filename, license details, and contact info.
+- GitHub: [@khiladisngh](https://github.com/khiladisngh)
+- Project: [hari-brothers-bus-service](https://github.com/khiladisngh/hari-brothers-bus-service)

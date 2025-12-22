@@ -41,12 +41,12 @@ async function initializeFirebaseAdmin() {
             });
             console.log("Firebase Admin SDK initialized (Emulator Mode).");
         } catch (e) {
-             if (e.code !== 'app/duplicate-app') { // Ignore if already initialized
-                 console.error("Emulator mode initialization failed:", e);
-                 throw e;
-             } else {
-                 console.warn("Firebase Admin SDK already initialized (Emulator Mode).");
-             }
+            if (e.code !== 'app/duplicate-app') { // Ignore if already initialized
+                console.error("Emulator mode initialization failed:", e);
+                throw e;
+            } else {
+                console.warn("Firebase Admin SDK already initialized (Emulator Mode).");
+            }
         }
     } else {
         console.log("No Emulator detected. Initializing using Service Account Key...");
@@ -111,6 +111,8 @@ async function uploadFileAndGetPublicUrl(bucket, localPath, destinationPath) {
 }
 
 async function uploadFileAndGetAccessibleUrl(bucket, localPath, destinationPath) {
+    const isEmulator = !!process.env.STORAGE_EMULATOR_HOST;
+
     try {
         const options = {
             destination: destinationPath,
@@ -118,31 +120,44 @@ async function uploadFileAndGetAccessibleUrl(bucket, localPath, destinationPath)
         };
         const [file] = await bucket.upload(localPath, options);
 
-        // Ensure file is public within Storage (for live or emulator)
-        await file.makePublic();
+        let fileUrl;
 
-        // Get a Signed URL - usually works reliably for emulators too
-        // Set expiry far in the future for effectively public access
-        const [signedUrl] = await file.getSignedUrl({
-            action: 'read',
-            expires: '01-01-2100' // Far future date
-        });
+        if (isEmulator) {
+            // For emulator, get WSL IP or use 0.0.0.0
+            const wslIP = process.env.WSL_IP;
+            let emulatorHost = process.env.STORAGE_EMULATOR_HOST.replace('http://', '').replace('https://', '');
 
-        // We will primarily use the Signed URL as it's more robust,
-        // but log the standard public URL pattern for reference.
-        const standardPublicUrl = `https://storage.googleapis.com/${bucket.name}/${destinationPath}`;
-        console.log(`  Uploaded ${path.basename(localPath)} -> ${destinationPath}`);
-        console.log(`    Standard Public URL: ${standardPublicUrl}`);
-        console.log(`    Signed URL (use this): ${signedUrl}`);
+            if (wslIP) {
+                // Use WSL IP for Windows browser access
+                emulatorHost = emulatorHost.replace('127.0.0.1', wslIP).replace('0.0.0.0', wslIP);
+            }
 
-        return signedUrl; // Return the Signed URL for use in JSON
+            // For emulator URLs, we need to encode the path properly
+            // Split by '/' and encode each segment, then join back
+            const pathSegments = destinationPath.split('/');
+            const encodedPath = pathSegments.map(segment => encodeURIComponent(segment)).join('%2F');
+
+            fileUrl = `http://${emulatorHost}/v0/b/${bucket.name}/o/${encodedPath}?alt=media`;
+            console.log(`  Uploaded ${path.basename(localPath)} -> ${destinationPath} (Emulator)`);
+        } else {
+            // For production, make public and get signed URL
+            await file.makePublic();
+            const [signedUrl] = await file.getSignedUrl({
+                action: 'read',
+                expires: '01-01-2100'
+            });
+            fileUrl = signedUrl;
+            console.log(`  Uploaded ${path.basename(localPath)} -> ${destinationPath}`);
+        }
+
+        return fileUrl;
 
     } catch (error) {
         // Log the specific error during upload
         console.error(`  ERROR uploading or getting URL for ${path.basename(localPath)} to ${destinationPath}:`, error.message);
         // If it's the specific SSL error, add context
         if (error.code === 'EPROTO' || (error.message && error.message.includes('routines:ssl3_get_record:wrong version number'))) {
-             console.error("  >>> This might be the HTTP/HTTPS protocol mismatch error with the emulator. <<<");
+            console.error("  >>> This might be the HTTP/HTTPS protocol mismatch error with the emulator. <<<");
         }
         return null; // Return null on failure
     }
@@ -178,8 +193,8 @@ async function processTourImages(bucket) {
                 let filenameUsed = localImagePath ? path.basename(localImagePath) : `${placeName}.jpg`; // Default filename for alt text
 
                 if (localImagePath) {
-                    const safeFilename = encodeURIComponent(path.basename(localImagePath));
-                    const destinationPath = `${toursStoragePrefix}${safeFilename}`;
+                    // Don't encode here - let uploadFileAndGetAccessibleUrl handle encoding for the URL
+                    const destinationPath = `${toursStoragePrefix}${path.basename(localImagePath)}`;
                     imageUrl = await uploadFileAndGetAccessibleUrl(bucket, localImagePath, destinationPath);
                 } else {
                     console.warn(`  - Local image not found for place: "${placeName}" in ${toursImageSourceDir}`);
@@ -209,8 +224,8 @@ async function processGalleryImages(bucket) {
 
     for (const filename of imageFiles) {
         const localPath = path.join(galleryImageSourceDir, filename);
-        const safeFilename = encodeURIComponent(filename);
-        const destinationPath = `${galleryStoragePrefix}${safeFilename}`;
+        // Don't encode here - let uploadFileAndGetAccessibleUrl handle encoding for the URL
+        const destinationPath = `${galleryStoragePrefix}${filename}`;
         const imageUrl = await uploadFileAndGetAccessibleUrl(bucket, localPath, destinationPath);
         if (imageUrl) {
             galleryData.push({ imageUrl: imageUrl, altText: deriveAltText(filename, `Gallery image: `), order: orderIndex++ });
@@ -229,7 +244,7 @@ async function processGalleryImages(bucket) {
 async function main() {
     let bucket;
     try { bucket = await initializeFirebaseAdmin(); }
-    catch(initError) { console.error("CRITICAL: Could not initialize Firebase Admin SDK. Exiting.", initError); process.exit(1); }
+    catch (initError) { console.error("CRITICAL: Could not initialize Firebase Admin SDK. Exiting.", initError); process.exit(1); }
 
     console.log(`\nTargeting Storage Bucket: ${bucket.name}`);
     // ... (rest of main function logging and calls) ...
