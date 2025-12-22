@@ -1,0 +1,8 @@
+version: 1
+builderId: nodejs20
+minInstances: 1
+maxInstances: 100
+timeoutSeconds: 120
+memory: 512MB
+region:
+  - asia-south1

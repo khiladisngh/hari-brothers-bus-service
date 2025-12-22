@@ -9,11 +9,10 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "20"
+    "node": "24"
   },
   "main": "index.js",
   "dependencies": {
-    "consolidate": "^1.0.4",
     "cookie-parser": "~1.4.7",
     "dotenv": "^16.5.0",
     "ejs": "~3.1.10",
