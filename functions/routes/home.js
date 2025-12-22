@@ -8,7 +8,7 @@ const { setCacheHeadersDirectly } = require('../middleware/cache');
 
 router.get('/', async (req, res, next) => {
     try {
-        const testimonials = await getAllTestimonials();
+        const testimonials = await getAllTestimonials(req.correlationId);
         setCacheHeadersDirectly(res, 600, 1800);
         res.render('home', { testimonials });
     } catch (error) {

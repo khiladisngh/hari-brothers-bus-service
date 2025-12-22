@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
         }
 
         // Save message and send email
-        await saveMessage(req.body);
+        await saveMessage(req.body, req.correlationId);
 
         // Redirect with success message
         res.redirect('/contact?success=true');

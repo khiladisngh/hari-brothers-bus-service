@@ -8,7 +8,7 @@ const { setCacheHeadersDirectly } = require('../middleware/cache');
 
 router.get('/', async (req, res, next) => {
     try {
-        const galleryItems = await getAllGalleryImages();
+        const galleryItems = await getAllGalleryImages(req.correlationId);
         setCacheHeadersDirectly(res, 3600, 7200);
         res.render('gallery', { galleryItems });
     } catch (error) {

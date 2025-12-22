@@ -1,19 +1,23 @@
 // controllers/gallery.js
-// Gallery data controller
+// Gallery data controller with structured logging
 
 const { getDb } = require('../config/firebase');
-const logger = require('firebase-functions/logger');
+const { log, logError, LogSeverity, PerformanceTimer } = require('../middleware/logger');
 
 /**
  * Fetch all gallery images from Firestore, ordered by order field
+ * @param {string} correlationId - Request correlation ID
  * @returns {Promise<Array>} Array of gallery image objects
  */
-async function getAllGalleryImages() {
-    const startTime = Date.now();
+async function getAllGalleryImages(correlationId = null) {
+    const perfTimer = new PerformanceTimer(correlationId);
     
     try {
         const db = getDb();
+        perfTimer.mark('db-query-start');
+
         const snapshot = await db.collection("galleryImages").orderBy("order", "asc").get();
+        perfTimer.mark('db-query-end');
         
         const galleryItems = snapshot.empty
             ? []
@@ -28,14 +32,23 @@ async function getAllGalleryImages() {
                 };
             });
         
-        logger.info("Gallery images fetched", {
-            count: galleryItems.length,
-            duration: `${Date.now() - startTime}ms`
-        });
+        perfTimer.mark('mapping-complete');
+
+        log(
+            LogSeverity.INFO,
+            'Gallery images fetched successfully',
+            {
+                operation: 'getAllGalleryImages',
+                count: galleryItems.length,
+                queryTimeMs: perfTimer.getDuration('db-query-start', 'db-query-end'),
+                totalTimeMs: perfTimer.getDuration()
+            },
+            correlationId
+        );
         
         return galleryItems;
     } catch (error) {
-        logger.error("Error fetching gallery images", { error: error.message });
+        logError(error, 'getAllGalleryImages', correlationId);
         throw error;
     }
 }

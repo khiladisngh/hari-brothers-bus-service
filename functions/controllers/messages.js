@@ -1,18 +1,20 @@
 // controllers/messages.js
-// Contact form messages controller
+// Contact form messages controller with structured logging
 
 const { getDb, getAdmin } = require('../config/firebase');
 const { getTransporter } = require('../config/nodemailer');
-const logger = require('firebase-functions/logger');
+const { log, logError, LogSeverity, PerformanceTimer } = require('../middleware/logger');
 
 /**
  * Save contact form message to Firestore and send email
  * @param {Object} messageData - Contact form data
+ * @param {string} correlationId - Request correlation ID
  * @returns {Promise<Object>} Result with document ID and email status
  */
-async function saveMessage(messageData) {
+async function saveMessage(messageData, correlationId = null) {
     const { firstName, lastName, email, phoneNumber, message } = messageData;
-    
+    const perfTimer = new PerformanceTimer(correlationId);
+
     try {
         // Send email if configured
         let emailInfo = null;
@@ -22,6 +24,7 @@ async function saveMessage(messageData) {
 
         if (transporter && emailRecipient && emailUser) {
             try {
+                perfTimer.mark('email-start');
                 emailInfo = await transporter.sendMail({
                     from: `"Hari Bus Service Website" <${emailUser}>`,
                     to: emailRecipient,
@@ -30,23 +33,35 @@ async function saveMessage(messageData) {
                     text: `Name: ${firstName} ${lastName}\nEmail: ${email}\nPhone: ${phoneNumber}\n\nMessage:\n${message}`,
                     html: `<p><strong>Name:</strong> ${firstName} ${lastName}</p><p><strong>Email:</strong> ${email}</p><p><strong>Phone:</strong> ${phoneNumber}</p><p><strong>Message:</strong></p><p>${message}</p>`
                 });
-                
-                logger.info("Contact form email sent", {
-                    messageId: emailInfo.messageId,
-                    recipient: emailRecipient
-                });
+                perfTimer.mark('email-end');
+
+                log(
+                    LogSeverity.INFO,
+                    'Contact form email sent',
+                    {
+                        operation: 'sendContactEmail',
+                        messageId: emailInfo.messageId,
+                        recipient: emailRecipient,
+                        emailTimeMs: perfTimer.getDuration('email-start', 'email-end')
+                    },
+                    correlationId
+                );
             } catch (emailError) {
-                logger.warn("Email sending failed", {
-                    error: emailError.message,
-                    recipient: emailRecipient
-                });
+                logError(emailError, 'sendContactEmail', correlationId);
+                log(
+                    LogSeverity.WARNING,
+                    'Email sending failed, continuing with DB save',
+                    { recipient: emailRecipient },
+                    correlationId
+                );
             }
         }
 
         // Save to Firestore
         const db = getDb();
         const admin = getAdmin();
-        
+        perfTimer.mark('db-save-start');
+
         const docRef = await db.collection("messages").add({
             firstName,
             lastName,
@@ -57,10 +72,20 @@ async function saveMessage(messageData) {
             submittedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        logger.info("Contact form message saved", {
-            documentId: docRef.id,
-            emailSent: !!emailInfo
-        });
+        perfTimer.mark('db-save-end');
+
+        log(
+            LogSeverity.INFO,
+            'Contact form message saved',
+            {
+                operation: 'saveMessage',
+                documentId: docRef.id,
+                emailSent: !!emailInfo,
+                dbSaveTimeMs: perfTimer.getDuration('db-save-start', 'db-save-end'),
+                totalTimeMs: perfTimer.getDuration()
+            },
+            correlationId
+        );
 
         return {
             documentId: docRef.id,
@@ -68,7 +93,7 @@ async function saveMessage(messageData) {
             emailMessageId: emailInfo?.messageId
         };
     } catch (error) {
-        logger.error("Error saving contact form message", { error: error.message });
+        logError(error, 'saveMessage', correlationId);
         throw error;
     }
 }
@@ -80,9 +105,9 @@ async function saveMessage(messageData) {
  */
 function validateMessageData(data) {
     const { firstName, lastName, email, phoneNumber, message } = data;
-    
+
     const errors = [];
-    
+
     if (!firstName || !firstName.trim()) {
         errors.push("First name is required");
     }
@@ -100,7 +125,7 @@ function validateMessageData(data) {
     if (!message || !message.trim()) {
         errors.push("Message is required");
     }
-    
+
     return {
         valid: errors.length === 0,
         errors
